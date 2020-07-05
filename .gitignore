@@ -1,0 +1,30 @@
+*.log
+*.pot
+*.pyc
+
+# Ignore secret keys
+*.pem
+secret_key.txt
+
+# Ignore certain image extensions
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.raw
+*.pdf
+
+# Editor backup files
+*~
+*#
+*.swp
+
+# Mac OS data store file
+.DS_Store
+
+# Django's SQL Lite Database File
+db.sqlite3
+
+# Webpack stat and bundle files
+node_modules
+package-lock.json
