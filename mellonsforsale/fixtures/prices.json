@@ -1,0 +1,52 @@
+[
+{
+  "model": "mellonsforsale.price",
+  "pk": 2,
+  "fields": {
+    "start_date": "2020-03-31T23:01:59.458Z",
+    "end_date": null,
+    "price": 55.00,
+    "item": 2
+  }
+},
+{
+  "model": "mellonsforsale.price",
+  "pk": 3,
+  "fields": {
+    "start_date": "2020-03-31T23:02:15.165Z",
+    "end_date": null,
+    "price": 0.00,
+    "item": 3
+  }
+},
+{
+  "model": "mellonsforsale.price",
+  "pk": 6,
+  "fields": {
+    "start_date": "2020-04-01T02:34:22.069Z",
+    "end_date": null,
+    "price": 17.00,
+    "item": 6
+  }
+},
+{
+  "model": "mellonsforsale.price",
+  "pk": 7,
+  "fields": {
+    "start_date": "2020-04-01T02:41:01.066Z",
+    "end_date": null,
+    "price": 15.00,
+    "item": 11
+  }
+},
+{
+  "model": "mellonsforsale.price",
+  "pk": 8,
+  "fields": {
+    "start_date": "2020-03-01T02:41:01.066Z",
+    "end_date": null,
+    "price": 30.00,
+    "item": 12
+  }
+}
+]

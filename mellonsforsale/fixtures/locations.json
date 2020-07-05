@@ -1,0 +1,98 @@
+[
+{
+  "model": "mellonsforsale.location",
+  "pk": 1,
+  "fields": {
+    "street": "5000 Forbes Avenue",
+    "city": "Pittsburgh",
+    "state": "PA",
+    "latitude": 40.444176999999996,   
+    "longitude": -79.94339075, 
+    "zip_code": "15213"
+  }
+},
+{
+  "model": "mellonsforsale.location",
+  "pk": 2,
+  "fields": {
+    "street": "110 Techview Terrace",
+    "city": "Pittsburgh",
+    "state": "PA",
+    "latitude": 40.443330,
+    "longitude": -79.937904,
+    "zip_code": "15217"
+  }
+},
+{
+  "model": "mellonsforsale.location",
+  "pk": 3,
+  "fields": {
+    "street": "Newell-Simon Hall",
+    "city": "Pittsburgh",
+    "state": "PA",
+    "latitude": 40.443218,     
+    "longitude": -79.945435,
+    "zip_code": "15213"
+  }
+},
+{
+  "model": "mellonsforsale.location",
+  "pk": 4,
+  "fields": {
+    "street": "4909 Frew St",
+    "city": "Pittsburgh",
+    "state": "PA",
+    "latitude": 40.440940,  
+    "longitude": -79.943697,
+    "zip_code": "15213"
+  }
+},
+{
+  "model": "mellonsforsale.location",
+  "pk": 5,
+  "fields": {
+    "street": "220 Schenley Rd",
+    "city": "Pittsburgh",
+    "state": "PA",
+    "latitude": 40.439691, 
+    "longitude": -79.935801,
+    "zip_code": "15217"
+  }
+},
+{
+  "model": "mellonsforsale.location",
+  "pk": 6,
+  "fields": {
+    "street": "",
+    "city": "",
+    "state": "",
+    "latitude": 40.0,
+    "longitude": 40.0,
+    "zip_code": ""
+  }
+},
+{
+  "model": "mellonsforsale.location",
+  "pk": 7,
+  "fields": {
+    "street": "",
+    "city": "",
+    "state": "",
+    "latitude": 40.0,
+    "longitude": 40.0,
+    "zip_code": ""
+  }
+},
+{
+  "model": "mellonsforsale.location",
+  "pk": 8,
+  "fields": {
+    "street": "5001 Forbes Avenue",
+    "city": "Pittsburgh",
+    "state": "PA",
+    "latitude": 40.444504,
+    "longitude": -79.941769,
+    "zip_code": "15213"
+  }
+}
+]

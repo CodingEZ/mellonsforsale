@@ -1,0 +1,21 @@
+{% extends "base_logged_in.html" %}
+
+{% block content %}
+
+  <div id="map1" class="centered-content"></div>
+
+  <!-- React renders into here -->
+  <div class="row">
+    <div id="storefront_filter_list" class="col-2"></div>
+    <div class="col-1"></div>
+    <div id="storefront_item_listing" class="col-9"></div>
+  </div>
+
+  {% load static %}
+  <script src="{% static 'mellonsforsale/js/325.js' %}" type="text/javascript"></script>
+  <script src="{% static 'mellonsforsale/js/storefront.js' %}" type="text/javascript"></script>
+  <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDGjLA5D0cDn63JS4OEckh3RM6xyCBmbCo&callback=initStorefrontMap">
+  </script>
+
+{% endblock %}

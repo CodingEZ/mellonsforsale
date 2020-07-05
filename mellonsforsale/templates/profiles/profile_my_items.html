@@ -1,0 +1,23 @@
+{% extends "base_logged_in.html" %}
+
+{% block content %}
+
+    <div class="centered-content">
+        <h1 class="page_name"> Items of {{entry.first_name}} {{entry.last_name}} </h1>
+        <div>
+            <form action="{% url 'profile_show' profile.id %}">
+                <input type="submit" value="Profile Overview" />
+            </form>
+        </div>
+    </div>
+
+    <!-- React renders into here -->
+    <div id="profile_items"></div> <br/>
+
+    <div id="interest_items"></div>
+
+    {% load static %}
+    <script src="{% static 'mellonsforsale/js/325.js' %}" type="text/javascript"></script>
+    <script src="{% static 'mellonsforsale/js/profile_my_items.js' %}" type="text/javascript"></script>
+
+{% endblock %}

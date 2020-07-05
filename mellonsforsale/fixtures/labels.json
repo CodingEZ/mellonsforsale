@@ -1,0 +1,56 @@
+[
+  {
+    "model": "mellonsforsale.label",
+    "pk": 1,
+    "fields": {
+      "name": "appliances",
+      "category": 1,
+      "description": "Generally contains medium to large electronic devices for in-home use."
+    }
+  },
+  {
+    "model": "mellonsforsale.label",
+    "pk": 2,
+    "fields": {
+      "name": "clothes",
+      "category": 1,
+      "description": "I hope this is self-explanatory."
+    }
+  },
+  {
+    "model": "mellonsforsale.label",
+    "pk": 3,
+    "fields": {
+      "name": "other",
+      "category": 1,
+      "description": "Items with miscellaneous usage."
+    }
+  },
+  {
+    "model": "mellonsforsale.label",
+    "pk": 4,
+    "fields": {
+      "name": "poor",
+      "category": 2,
+      "description": "poor"
+    }
+  },
+  {
+    "model": "mellonsforsale.label",
+    "pk": 5,
+    "fields": {
+      "name": "good",
+      "category": 2,
+      "description": "good"
+    }
+  },
+  {
+    "model": "mellonsforsale.label",
+    "pk": 6,
+    "fields": {
+      "name": "excellent",
+      "category": 2,
+      "description": "excellent"
+    }
+  }
+]

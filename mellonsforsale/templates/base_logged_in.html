@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+
+{% block user-info %}
+
+  <div class="user-info">    
+    <div class="dropdown">
+      <button id="id_show_nav_button" class="dropbtn">{{user.first_name}} {{user.last_name}} &#8595;</button>
+      <div class="dropdown-content">
+        <a class="nav_link" href="{% url 'profile_show' id=user.id %}"> My Profile </a>
+        <a class="nav_link" href="{% url 'profile_items' id=user.id %}"> My Items </a>
+        <a class="nav_link" href="{% url 'item_create' %}">Create new Item</a>
+        <a class="nav_link" href="{% url 'storefront' %}"> Storefront </a>
+        <a class="nav_link" href="{% url 'logout' %}">Logout</a>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}

@@ -1,0 +1,18 @@
+[
+  {
+    "model": "mellonsforsale.category",
+    "pk": 1,
+    "fields": {
+      "name": "Item Usage",
+      "description": "Category for separating by item usage."
+    }
+  },
+  {
+    "model": "mellonsforsale.category",
+    "pk": 2,
+    "fields": {
+      "name": "Quality",
+      "description": "Category for distinguishing by quality (new, bad, good)."
+    }
+  }
+]

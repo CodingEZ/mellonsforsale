@@ -1,0 +1,52 @@
+{% extends "base_logged_in.html" %}
+
+{% block content %}
+
+    <div class="centered-content">
+        <h1 class="page_name"> Profile Overview for {{entry.first_name}} {{entry.last_name}} </h1>
+        <div>
+            {% if entry.id == user.id %}
+                <form action="{% url 'profile_update' profile.id %}">
+                    <input type="submit" value="Edit Profile" />
+                </form>
+            {% endif %}
+            <form action="{% url 'profile_items' profile.id %}">
+                <input type="submit" value="Examine Items" />
+            </form>
+        </div>
+    </div>
+    
+    {% load static %}
+    <div class="row">
+        <div class="col-4">
+            {% if profile %}
+                <img id = "id_user_picture" class = "profile_pic" src="{% url 'photo' profile.id %}" alt="Smiley face" height="200" width="200">
+            {% else %}
+                <img id = "id_user_picture" class = "profile_pic" src="/media/farn.jpg" alt="Smiley face" height="200" width="200">
+            {% endif %}
+        </div>
+
+        <div class="col-8">
+            <div>
+                <span> Bio: </span>
+                <p id="id_user_bio">
+                    {{ profile.bio }}
+                </p>
+            </div>
+            
+            <div>
+                <span> Email: </span>
+                <a style="color:blue" href=mailto:{{profile.user.email}}>{{profile.user.email}}</a>
+            </div>
+            <div>
+                <span> Phone: </span>
+                {% if profile.phone %}
+                    <a style="color:blue" href="tel:{{profile.phone}}"> {{profile.phone }} </a>
+                {% else %}
+                    <a>none available</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

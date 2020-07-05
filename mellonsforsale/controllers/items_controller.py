@@ -1,0 +1,356 @@
+from django.shortcuts import render, redirect, reverse
+from django.http import HttpResponse, JsonResponse, Http404
+from django.urls import reverse
+from django.core import serializers
+
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.cache import cache_control
+from django.contrib.auth.models import User
+from mellonsforsale.models import Profile, Item, Price, Location, Category, Label
+
+from django.utils import timezone
+from django.db import transaction
+
+from mellonsforsale.forms import LoginForm, RegistrationForm, CreateProfileForm, EditProfileForm, CreateItemForm
+from .application_controller import *
+from .geolocation_helpers import get_coordinates, item_haversine
+
+import json
+import math
+from datetime import datetime
+
+
+@transaction.atomic
+def prepare_items(request, items, deletable):
+    """Prepare data into a format friendly for the UI. Returns JSON data."""
+    item_list = []
+    for item in items:
+        curr_item = dict()
+        curr_item['id'] = item.id
+        # Location info
+        curr_item['street'] = item.location.street
+        curr_item['state'] = item.location.state
+        curr_item['city'] = item.location.city
+        curr_item['zip'] = item.location.zip_code
+        curr_item['lat'] = item.location.latitude
+        curr_item['long'] = item.location.longitude
+
+        curr_item['name'] = item.name
+        curr_item['description'] = item.description
+        curr_item['location'] = item.location.street + ", " + item.location.city + " " + item.location.state
+        curr_item['seller_name'] = item.seller.user.first_name + " " + item.seller.user.last_name
+        curr_item['seller_id'] = reverse('profile_overview', kwargs={'id': item.seller.user.id})
+        curr_item['price'] = str(Price.objects.filter(item = item).order_by('-start_date')[0].price)
+        
+        interested_profiles = item.interested.all()
+        curr_item['interested_users'] = [
+            {
+                'id': profile.user.id,
+                'name': profile.user.first_name + " " + profile.user.last_name,
+                'link': reverse('profile_overview', kwargs={'id': profile.user.id})
+            } for profile in interested_profiles
+        ]
+
+        current_profile = Profile.objects.get(user=request.user)
+        curr_item['me_interested'] = current_profile in interested_profiles
+        
+        # can be deleted if owned by the user
+        if deletable:
+            curr_item['deletable'] = True
+            curr_item['delete_url'] = reverse('item_delete', kwargs={'id': item.id})
+            curr_item['delete_text'] = "Delete 🗑"
+        else:
+            curr_item['deletable'] = False
+        item_list.append(curr_item)
+    return item_list
+
+
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+@transaction.atomic
+@accepted_request_type(['GET', 'POST'])
+@login_required
+def item_create_action(request):
+    context = {}
+
+    if request.method == 'GET':
+        form = CreateItemForm()
+        #form.fields["labels"].queryset = Label.objects.all().values_list('name', flat=True)
+        context['form'] = form
+        return render(request, 'items/create_item.html', context)
+
+    # Creates a bound form from the request POST parameters and makes the
+    # form available in the request context dictionary.
+    form = CreateItemForm(request.POST)
+    context['form'] = form
+
+    # Validates the form.
+    if not form.is_valid():
+        return render(request, 'items/create_item.html', context)
+
+    latitude, longitude = get_coordinates(request)
+    new_location = Location.objects.create(street = request.POST['street'], 
+                                           city = request.POST['city'], 
+                                           state = request.POST['state'], 
+                                           latitude = latitude, 
+                                           longitude = longitude, 
+                                           zip_code = request.POST['zip'])
+    new_location.save()
+
+    new_item = Item.objects.create( name = form.cleaned_data['name'],
+                                    description = form.cleaned_data['description'],
+                                    location = new_location, 
+                                    seller = Profile.objects.get(user=request.user))
+    new_item.labels.set(form.cleaned_data['labels'])
+    new_item.save()
+
+    new_price = Price.objects.create(start_date = datetime.now(),
+                                     end_date = None,
+                                     price = float(request.POST['price']),
+                                     item = new_item)
+    new_price.save()
+
+    return redirect(reverse('profile_items', kwargs={'id': request.user.id}))
+
+
+@transaction.atomic
+@accepted_request_type(['POST'])
+@object_missing(Item)
+@login_required
+def item_update_action(request, id):
+    item = Item.objects.get(pk=id)
+    if item.seller.user != request.user:
+        result = {"message": "Cannot edit someone else's item."}
+        return JsonResponse(result)
+
+    name = request.POST.get('name')
+    description = request.POST.get('description')
+    price = request.POST.get('price')
+    street = request.POST.get('street')
+    city = request.POST.get('city')
+    state = request.POST.get('state')
+    zipcode = request.POST.get('zip')
+
+    if name is None or description is None or price is None or street is None \
+        or city is None or state is None or zipcode is None:
+        result = {"message": "Missing parameters."}
+        return JsonResponse(result)
+    
+    item.name = name
+    item.description = description
+    item.save()
+
+    new_price = Price.objects.create(start_date = datetime.now(timezone.utc),
+                                     end_date = None,
+                                     price = float(price),
+                                     item = item)
+    new_price.save()
+
+    same = ((item.location.street == street) and (item.location.city == city) 
+        and (item.location.state == state) and (item.location.zip_code == zipcode))
+    if not same:
+        latitude, longitude = get_coordinates(request)
+        new_location = Location.objects.create(street = street, 
+                                               city = city, 
+                                               state = state, 
+                                               latitude = latitude, 
+                                               longitude = longitude, 
+                                               zip_code = zipcode)
+        new_location.save()
+        
+        item.location = new_location
+        item.save()
+    else: 
+        print("Address hasn't changed")
+    
+    return HttpResponse({})
+
+
+@transaction.atomic
+@accepted_request_type(['POST'])
+@object_missing(Item)
+@login_required
+def item_delete_action(request, id):
+    item = Item.objects.get(pk=id)
+    if item.seller.user != request.user:
+        result = {"message": "Cannot delete someone else's item."}
+        return JsonResponse(result)
+
+    prices = Price.objects.filter(item = item)
+    prices.delete()
+    item.delete()
+    return JsonResponse({})
+
+
+@transaction.atomic
+@accepted_request_type(['POST'])
+@object_missing(Item)
+@login_required
+def item_interest_action(request, item_id):
+    item = Item.objects.get(pk=item_id)
+    profile = Profile.objects.get(user=request.user)
+    if item.seller == profile:
+        result = {"message": "Cannot express interest in your own item."}
+        return JsonResponse(result)
+
+    if (profile not in item.interested.all()):
+        item.interested.add(profile)
+    else:
+        item.interested.remove(profile)
+    item.save()
+    return JsonResponse({})
+
+
+@transaction.atomic
+@accepted_request_type(['GET'])
+@login_required
+def get_item_listing_action(request):
+    exclusion = request.GET.get('exclude_username')
+    inclusion = request.GET.get('include_username')
+    interests = request.GET.get('interest_username')
+    destroyable = request.GET.get('destroyable')
+    if destroyable == 'true' or destroyable == True:
+        destroyable = True
+    else:
+        destroyable = False
+
+    return JsonResponse({'items': []})
+
+    items = Item.objects.all()
+    if inclusion:
+        user = User.objects.filter(username=inclusion)[0]
+        profile = Profile.objects.get(user=user.id)
+        items = items.filter(seller=profile)
+    if exclusion:
+        user = User.objects.filter(username=exclusion)[0]
+        profile = Profile.objects.get(user=user.id)
+        items = items.exclude(seller=profile)
+    if interests:
+        user = User.objects.filter(username=interests)[0]
+        profile = Profile.objects.get(user=user.id)
+        items = items.filter(interested__in=[profile])
+    
+    item_list = prepare_items(request, items, destroyable)
+    return JsonResponse(item_list)
+
+
+@transaction.atomic
+@accepted_request_type(['GET'])
+@login_required
+def item_index_action(request):
+    profile = Profile.objects.get(user=request.user)
+    items_owned = Item.objects.filter(seller=profile)
+    items_interest = Item.objects.filter(interested__in=[profile])
+    return JsonResponse({
+        'items_owned': items_owned,
+        'items_interest': items_interest
+    })
+
+
+def validate_query_labels(query_labels):
+    distance = None
+    values = []
+    for item in query_labels:
+        label, value, *_ = item
+        if label == 'key':
+            if len(str(value)) > 1000:
+                print("Query value more than 1000 characters. Attempted overflow.")
+                return None
+            if not Label.objects.get(pk=value):
+                print(f"Query value {value} does not exist in database.")
+                return None
+            values.append(value)
+        elif label == 'distance':
+            try:
+                value = float(value)
+            except:
+                print("Query value not a number.")
+                return None
+
+            if value > 10000:
+                print("Query value too large. Attempted overflow.")
+                return None
+            elif value <= 0:
+                print("Query value must be positive.")
+                return None
+            distance = value
+        else:
+            print(f"Invalid query label.")
+            return None
+    return (distance, values)
+
+
+@transaction.atomic
+@login_required
+def filter_item_listing_action(request):
+    def default_response(profile):
+        items = Item.objects.exclude(seller=profile)
+        item_list = prepare_items(request, items, False)
+        return JsonResponse(item_list)
+    
+    own_profile = Profile.objects.get(user=request.user)
+
+    if request.method != 'GET':
+        print("Only processing get requests.")
+        return default_response(own_profile)
+
+    query_json = request.GET.get('query_labels')
+    if query_json is None:
+        print("No query labels were given.")
+        return default_response(own_profile)
+
+    lat = request.GET.get('user_lat')
+    lng = request.GET.get('user_lng')
+    if lat is None or lng is None:
+        print("No location given.")
+        return default_response(own_profile)
+
+    try:
+        lat = float(lat)
+        lng = float(lng)
+    except:
+        print("Query location not numbers.")
+        return default_response(own_profile)
+
+    # check if any labels are invalid
+    query_labels = json.loads(query_json)
+    tmp = validate_query_labels(query_labels)
+    if tmp is None:
+        return default_response(own_profile)
+    (distance, values) = tmp
+
+    # no labels selected, need to select all items first
+    items = Item.objects.exclude(seller=own_profile)
+    if len(values) > 0:
+        for value in values:
+            items = items.filter(labels__in=[value])
+
+    # calculate items that are within the distance
+    if not (distance is None) and not (lat is None) and not (lng is None):
+        items = [item for item in items if item_haversine(item, lat, lng)]
+
+    item_list = prepare_items(request, items, False)
+    return JsonResponse(item_list)
+
+
+@transaction.atomic
+@login_required
+def get_filter_listing_action(request):
+    # Prepare data into a format friendly for the UI. Returns JSON data.
+    category_lists = []
+    categories = list(Category.objects.all())
+    for category in categories:
+        labels = list(Label.objects.filter(category=category))
+        category_lists.append(
+            {
+                'id': category.id,
+                'category': category.name,
+                'description': category.description,
+                'labels': [
+                    {
+                        'id': label.id,
+                        'name': label.name
+                    } for label in labels
+                ]
+            }
+        )
+    return JsonResponse({'categories': category_lists})
