@@ -1,5 +1,4 @@
 import React from "react";
-import { ajaxFailure, getCSRFToken } from "../helpers.js";
 import InterestItem from "./interest_item.jsx";
 
 class PersonalInterestItem extends React.Component {

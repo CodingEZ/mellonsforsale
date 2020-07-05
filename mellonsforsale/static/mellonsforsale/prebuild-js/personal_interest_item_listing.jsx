@@ -20,16 +20,15 @@ class PersonalInterestItemListing extends React.Component {
 
     update() {
         $.ajax({
-            url: "/get-item-listing",
+            url: "/get-interest-listing",
             data: {
-                interest_username: this.state.username,
-                destroyable: false,
                 csrfmiddlewaretoken: getCSRFToken()
             },
             type: "GET",
             dataType: "json"
         })
-            .done((item_list) => {
+            .done((res) => {
+                const item_list = res.items;
                 this.setState({ items: item_list });
                 console.log("Successful interest listing initialization!");
             })
@@ -39,7 +38,7 @@ class PersonalInterestItemListing extends React.Component {
     render() {
         const grid = [];
         if (this.state.items.length > 0) {
-            for (let i = 0; i < this.state.items.length;) {
+            for (let i = 0; i < this.state.items.length; i++) {
                 const obj = this.state.items[i];
                 grid.push(
                     <PersonalInterestItem key={obj.id.toString()} item_object={obj} />

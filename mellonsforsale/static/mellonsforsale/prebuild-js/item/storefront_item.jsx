@@ -5,24 +5,25 @@ class StorefrontItem extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            obj: props.item_object
+            obj: props.item_object,
+            item: new InterestItem(props.item_object)
         };
     }
 
     make_body_component() {
-        return InterestItem.make_body_component();
+        return this.state.item.make_body_component();
     }
 
     make_deletable_component() {
-        return InterestItem.make_deletable_component();
+        return this.state.item.make_deletable_component();
     }
 
     make_interest_component() {
-        return InterestItem.make_interest_component();
+        return this.state.item.make_interest_component();
     }
 
     render() {
-        const { obj } = this.state;
+        const obj = this.state.obj;
         const body_component = this.make_body_component();
         const interest_component = this.make_interest_component();
 

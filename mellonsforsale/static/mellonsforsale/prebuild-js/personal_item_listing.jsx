@@ -1,9 +1,9 @@
 import React from "react";
 import $ from "jquery";
 import { ajaxFailure, getCSRFToken } from "./helpers.js";
-import Item from "./item/item.jsx";
+import PersonalItem from "./item/personal_item.jsx";
 
-class ItemListing extends React.Component {
+class PersonalItemListing extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -20,7 +20,7 @@ class ItemListing extends React.Component {
         this.interval = setInterval(() => {
             console.log(`Update at ${new Date().toISOString()}`);
             this.update();
-        }, 30000);
+        }, 10000);
     }
 
     componentWillUnmount() {
@@ -29,16 +29,15 @@ class ItemListing extends React.Component {
 
     update() {
         $.ajax({
-            url: "/get-item-listing",
+            url: "/get-personal-listing",
             data: {
-                include_username: this.state.username,
-                destroyable: true,
                 csrfmiddlewaretoken: getCSRFToken()
             },
             type: "GET",
             dataType: "json"
         })
-            .done((item_list) => {
+            .done((res) => {
+                const item_list = res.items;
                 this.setState({ items: item_list });
                 console.log("Successful own listing initialization!");
             })
@@ -48,10 +47,10 @@ class ItemListing extends React.Component {
     render() {
         const grid = [];
         if (this.state.items.length > 0) {
-            for (let i = 0; i < this.state.items.length;) {
+            for (let i = 0; i < this.state.items.length; i++) {
                 const obj = this.state.items[i];
                 grid.push(
-                    <Item key={obj.id.toString()} item_object={obj} update={this.update.bind(this)} />
+                    <PersonalItem key={obj.id.toString()} item_object={obj} update={this.update.bind(this)} />
                 );
             }
         } else {
@@ -71,4 +70,4 @@ class ItemListing extends React.Component {
     }
 }
 
-export default ItemListing;
+export default PersonalItemListing;

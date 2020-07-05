@@ -1,7 +1,7 @@
 import React from "react";
 import $ from "jquery";
 import { ajaxFailure, getCSRFToken } from "./helpers.js";
-import StorefrontItem from "./item/storefront_item.jsx";
+import BaseItem from "./item/base_item.jsx";
 
 let user_pos;
 
@@ -46,16 +46,15 @@ class StorefrontListing extends React.Component {
 
     update() {
         $.ajax({
-            url: "/get-item-listing",
+            url: "/get-storefront-listing",
             data: {
-                exclude_username: this.state.username,
-                destroyable: false,
                 csrfmiddlewaretoken: getCSRFToken()
             },
             type: "GET",
             dataType: "json"
         })
-            .done((item_list) => {
+            .done((res) => {
+                const item_list = res.items;
                 this.setState({ items: item_list });
             })
             .fail(ajaxFailure);
@@ -89,10 +88,10 @@ class StorefrontListing extends React.Component {
     render() {
         const grid = [];
         if (this.state.items.length > 0) {
-            for (let i = 0; i < this.state.items.length;) {
+            for (let i = 0; i < this.state.items.length; i++) {
                 const obj = this.state.items[i];
                 grid.push(
-                    <StorefrontItem key={obj.id.toString()} item_object={obj} />
+                    <BaseItem key={obj.id.toString()} item_object={obj} />
                 );
             }
         } else {

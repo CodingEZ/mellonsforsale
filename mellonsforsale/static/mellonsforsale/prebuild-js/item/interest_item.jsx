@@ -7,20 +7,21 @@ class InterestItem extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            obj: props.item_object
+            obj: props.item_object,
+            item: new BaseItem(props.item_object)
         };
     }
 
     make_body_component() {
-        return BaseItem.make_body_component();
+        return this.state.item.make_body_component();
     }
 
     make_deletable_component() {
-        return BaseItem.make_deletable_component();
+        return this.state.item.make_deletable_component();
     }
 
     make_interest_component() {
-        const obj = this.props.item_object;
+        const obj = this.state.obj;
         let interest_button_id;
         if (obj.me_interested) {
             interest_button_id = "star_yellow";
@@ -61,7 +62,7 @@ class InterestItem extends React.Component {
     }
 
     render() {
-        const obj = this.props.item_object;
+        const obj = this.state.obj;
         const body_component = this.make_body_component();
         const interest_component = this.make_interest_component();
         const deletable_component = this.make_deletable_component();

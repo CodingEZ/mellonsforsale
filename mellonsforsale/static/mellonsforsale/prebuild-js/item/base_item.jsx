@@ -9,7 +9,7 @@ class BaseItem extends React.Component {
     }
 
     make_body_component() {
-        const obj = this.props.item_object;
+        const obj = this.state.obj;
         return (
             <div className="card-body">
                 <strong> Description:  </strong>
@@ -42,7 +42,7 @@ class BaseItem extends React.Component {
     }
 
     make_deletable_component() {
-        const obj = this.props.item_object;
+        const obj = this.state.obj;
         if (obj.deletable) {
             return (
                 <a id="delete" href={obj.delete_url}>
@@ -54,7 +54,7 @@ class BaseItem extends React.Component {
     }
 
     render() {
-        const obj = this.props.item_object;
+        const obj = this.state.obj;
         const body_component = this.make_body_component();
         const deletable_component = this.make_deletable_component();
 

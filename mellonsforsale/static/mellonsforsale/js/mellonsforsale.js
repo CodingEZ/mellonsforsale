@@ -32,19 +32,16 @@ function getUserLng(){
 
 // Initialize and add map to the Storefront page
 function initStorefrontMap() {
-    var username = "rubbish";
-
     $.ajax({
-        url: "/get-item-listing",
+        url: "/get-storefront-listing",
         data: {
-            exclude_username: username,
-            destroyable: false,
             csrfmiddlewaretoken: getCSRFToken(),
         },
         type: "GET",
         dataType: "json",
     })
-    .done(function(item_list) {
+    .done(function(res) {
+        const item_list = res.items;
         
         // Location of CMU
         var cmu = {lat: 40.443, lng: -79.943};

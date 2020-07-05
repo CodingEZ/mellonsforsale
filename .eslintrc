@@ -42,6 +42,7 @@
     "react/no-access-state-in-setstate": "off",
     "react/no-render-return-value": "off",
     "react/no-unused-state": "off",
+    "prefer-destructuring": "off",
     "prefer-template": "off"
   }
 }

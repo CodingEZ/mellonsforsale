@@ -34,7 +34,7 @@ function edit_item(item_id) {
         .fail(ajaxFailure);
 }
 
-class Item extends React.Component {
+class PersonalItem extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -49,7 +49,7 @@ class Item extends React.Component {
     componentDidMount() {
         this.interval = setInterval(() => {
             const now = new Date();
-            if (this.state.info_is_updated && now - this.state.last_update > 2000) {
+            if (this.state.info_is_updated && now - this.state.last_update > 10000) {
                 this.setState({
                     info_is_updated: false,
                     last_update: now
@@ -58,7 +58,7 @@ class Item extends React.Component {
                 const item_id = this.state.obj.id;
                 edit_item(item_id);
             }
-        }, 1000);
+        }, 2000);
     }
 
     componentWillUnmount() {
@@ -155,12 +155,7 @@ class Item extends React.Component {
                 <div className="card">
                     <div className="card-title centered-content">
                         <strong> Name: </strong>
-                        <input
-                          type="text"
-                          id={`name_${obj.id}`}
-                          value={obj.name}
-                          onChange={(e) => this.handleChange("name", e)}
-                        />
+                        <input id={`name_${obj.id}`} type="text" value={obj.name} onChange={(e) => this.handleChange("name", e)} />
                     </div>
 
                     <div className="card-body">
@@ -245,7 +240,7 @@ class Item extends React.Component {
         }
 
         return (
-            <div id={`item_${obj.id}`} className="card">
+            <div id={`item${obj.id}`} className="card">
                 <div className="card-title">
                     <strong>
                         Name:
@@ -291,4 +286,4 @@ class Item extends React.Component {
     }
 }
 
-export default Item;
+export default PersonalItem;

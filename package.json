@@ -33,6 +33,8 @@
     "build": "webpack --config webpack.config.js",
     "lint": "eslint --fix --ext .js,.jsx mellonsforsale/static/mellonsforsale/prebuild-js",
     "lint-js": "eslint-auto-fix \"mellonsforsale/static/mellonsforsale/prebuild-js\" ",
+    "run": "python manage.py runserver",
+    "rebuild-run": "npm run-script build && npm run-script run",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Pikachu",

@@ -40,7 +40,9 @@ urlpatterns = [
     path('storefront', views.storefront_action, name='storefront'),
 
     # for AJAX requests
-    path('get-item-listing', items_controller.get_item_listing_action),
+    path('get-storefront-listing', items_controller.get_storefront_listing),
+    path('get-personal-listing', items_controller.get_personal_listing),
+    path('get-interest-listing', items_controller.get_interest_listing),
     path('filter-item-listing', items_controller.filter_item_listing_action),
     path('get-filter-listing', items_controller.get_filter_listing_action),
 

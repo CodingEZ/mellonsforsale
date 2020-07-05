@@ -1,7 +1,7 @@
 import ReactDOM from "react-dom";
 import React from "react";
 import $ from "jquery";
-import { ajaxFailure } from "./helpers";
+import { ajaxFailure } from "./helpers.js";
 
 class Item extends React.Component {
     constructor(props) {
