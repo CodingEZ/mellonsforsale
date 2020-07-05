@@ -10,7 +10,7 @@ from django.core.mail import EmailMessage
 
 class UserTokenGenerator(PasswordResetTokenGenerator):
     def _make_hash_value(self, user, timestamp):
-        return str(user.pk) + str(timestamp) + str(user.is_activated)
+        return str(user.pk) + str(timestamp)
 
 
 def send_email(request, new_user, token_generator):

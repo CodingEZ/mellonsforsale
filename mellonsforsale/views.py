@@ -7,7 +7,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import cache_control
 from django.contrib.auth.models import User
-from mellonsforsale.models import Profile, Item, Price, Location, Category, Label
+from mellonsforsale.models import Profile, Item, Price, Category, Label
 from django.contrib.sites.shortcuts import get_current_site
 
 from django.utils.encoding import force_bytes, force_text
@@ -43,16 +43,16 @@ def prepare_items(request, items, deletable):
         curr_item = dict()
         curr_item['id'] = item.id
         # Location info
-        curr_item['street'] = item.location.street
-        curr_item['state'] = item.location.state
-        curr_item['city'] = item.location.city
-        curr_item['zip'] = item.location.zip_code
-        curr_item['lat'] = item.location.latitude
-        curr_item['long'] = item.location.longitude
+        curr_item['street'] = item.street
+        curr_item['state'] = item.state
+        curr_item['city'] = item.city
+        curr_item['zip'] = item.zip_code
+        curr_item['lat'] = item.latitude
+        curr_item['long'] = item.longitude
 
         curr_item['name'] = item.name
         curr_item['description'] = item.description
-        curr_item['location'] = item.location.street + ", " + item.location.city + " " + item.location.state
+        curr_item['location'] = item.street + ", " + item.city + " " + item.state
         curr_item['seller_name'] = item.seller.user.first_name + " " + item.seller.user.last_name
         curr_item['seller_id'] = reverse('profile_overview', kwargs={'id': item.seller.user.id})
         curr_item['price'] = str(Price.objects.filter(item = item).order_by('-start_date')[0].price)
@@ -132,11 +132,11 @@ def register_action(request):
                                         email=form.cleaned_data['email'],
                                         first_name=form.cleaned_data['first_name'],
                                         last_name=form.cleaned_data['last_name'])
-    new_user.is_active = False
     new_user.save()
     
     prof = Profile.objects.create(user=new_user)
     prof.phone = form.cleaned_data['phone']
+    prof.is_activated = False
     prof.save()
 
     send_email(request, new_user, account_activation_token)
@@ -146,8 +146,9 @@ def register_action(request):
 def activate(request, uidb64, token):
     user = user_from_uid(uidb64)
     if user is not None and account_activation_token.check_token(user, token):
-        user.is_active = True
-        user.save()
+        profile = Profile.objects.get(user=user)
+        profile.is_activated = True
+        profile.save()
         login(request, user)
         return redirect('storefront')
     return render(request, 'invalid_activation.html', {})

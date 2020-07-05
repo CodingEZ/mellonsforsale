@@ -5,7 +5,12 @@
   "fields": {
     "name": "Grapes of Wrath",
     "description": "new",
-    "location": 5,
+    "street": "220 Schenley Rd",
+    "city": "Pittsburgh",
+    "state": "PA",
+    "latitude": 40.439691, 
+    "longitude": -79.935801,
+    "zip_code": "15217",
     "seller": 1,
     "labels": [3]
   }
@@ -16,7 +21,12 @@
   "fields": {
     "name": "Of Mice and Men",
     "description": "new",
-    "location": 2,
+    "street": "110 Techview Terrace",
+    "city": "Pittsburgh",
+    "state": "PA",
+    "latitude": 40.443330,
+    "longitude": -79.937904,
+    "zip_code": "15217",
     "seller": 3,
     "labels": [3],
     "interested": [2,3,4]
@@ -28,7 +38,12 @@
   "fields": {
     "name": "Laptop",
     "description": "old macbook",
-    "location": 3,
+    "street": "Newell-Simon Hall",
+    "city": "Pittsburgh",
+    "state": "PA",
+    "latitude": 40.443218,     
+    "longitude": -79.945435,
+    "zip_code": "15213",
     "seller": 4,
     "labels": [1]
   }
@@ -39,7 +54,12 @@
   "fields": {
     "name": "Harry Potter and the Chamber of Secrets",
     "description": "okay",
-    "location": 8,
+    "street": "5001 Forbes Avenue",
+    "city": "Pittsburgh",
+    "state": "PA",
+    "latitude": 40.444504,
+    "longitude": -79.941769,
+    "zip_code": "15213",
     "seller": 2,
     "labels": [3],
     "interested": [1,4]
@@ -51,7 +71,12 @@
   "fields": {
     "name": "Microwave",
     "description": "used",
-    "location": 4,
+    "street": "4909 Frew St",
+    "city": "Pittsburgh",
+    "state": "PA",
+    "latitude": 40.440940,  
+    "longitude": -79.943697,
+    "zip_code": "15213",
     "seller": 3,
     "labels": [1],
     "interested": [1,3]

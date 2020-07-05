@@ -6,7 +6,7 @@ from django.core import serializers
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import cache_control
 from django.contrib.auth.models import User
-from mellonsforsale.models import Profile, Item, Price, Location, Category, Label
+from mellonsforsale.models import Profile, Item, Price, Category, Label
 
 from django.utils import timezone
 from django.db import transaction
@@ -28,18 +28,18 @@ def prepare_items(request, items, deletable):
         curr_item = dict()
         curr_item['id'] = item.id
         # Location info
-        curr_item['street'] = item.location.street
-        curr_item['state'] = item.location.state
-        curr_item['city'] = item.location.city
-        curr_item['zip'] = item.location.zip_code
-        curr_item['lat'] = item.location.latitude
-        curr_item['long'] = item.location.longitude
+        curr_item['street'] = item.street
+        curr_item['state'] = item.state
+        curr_item['city'] = item.city
+        curr_item['zip'] = item.zip_code
+        curr_item['lat'] = item.latitude
+        curr_item['long'] = item.longitude
 
         curr_item['name'] = item.name
         curr_item['description'] = item.description
-        curr_item['location'] = item.location.street + ", " + item.location.city + " " + item.location.state
+        curr_item['location'] = item.street + ", " + item.city + " " + item.state
         curr_item['seller_name'] = item.seller.user.first_name + " " + item.seller.user.last_name
-        curr_item['seller_id'] = reverse('profile_overview', kwargs={'id': item.seller.user.id})
+        curr_item['seller_id'] = reverse('profile_show', kwargs={'id': item.seller.user.id})
         curr_item['price'] = str(Price.objects.filter(item = item).order_by('-start_date')[0].price)
         
         interested_profiles = item.interested.all()
@@ -47,7 +47,7 @@ def prepare_items(request, items, deletable):
             {
                 'id': profile.user.id,
                 'name': profile.user.first_name + " " + profile.user.last_name,
-                'link': reverse('profile_overview', kwargs={'id': profile.user.id})
+                'link': reverse('profile_show', kwargs={'id': profile.user.id})
             } for profile in interested_profiles
         ]
 
@@ -88,17 +88,14 @@ def item_create_action(request):
         return render(request, 'items/create_item.html', context)
 
     latitude, longitude = get_coordinates(request)
-    new_location = Location.objects.create(street = request.POST['street'], 
-                                           city = request.POST['city'], 
-                                           state = request.POST['state'], 
-                                           latitude = latitude, 
-                                           longitude = longitude, 
-                                           zip_code = request.POST['zip'])
-    new_location.save()
-
     new_item = Item.objects.create( name = form.cleaned_data['name'],
                                     description = form.cleaned_data['description'],
-                                    location = new_location, 
+                                    street = request.POST['street'],
+                                    city = request.POST['city'],
+                                    state = request.POST['state'],
+                                    latitude = latitude,
+                                    longitude = longitude,
+                                    zip_code = request.POST['zip'],
                                     seller = Profile.objects.get(user=request.user))
     new_item.labels.set(form.cleaned_data['labels'])
     new_item.save()
@@ -135,33 +132,23 @@ def item_update_action(request, id):
         result = {"message": "Missing parameters."}
         return JsonResponse(result)
     
+    latitude, longitude = get_coordinates(request)
+    
     item.name = name
     item.description = description
+    item.street = street
+    item.city = city
+    item.state = state
+    item.latitude = latitude
+    item.longitude = longitude
+    item.zip_code = zipcode
     item.save()
 
     new_price = Price.objects.create(start_date = datetime.now(timezone.utc),
                                      end_date = None,
                                      price = float(price),
                                      item = item)
-    new_price.save()
-
-    same = ((item.location.street == street) and (item.location.city == city) 
-        and (item.location.state == state) and (item.location.zip_code == zipcode))
-    if not same:
-        latitude, longitude = get_coordinates(request)
-        new_location = Location.objects.create(street = street, 
-                                               city = city, 
-                                               state = state, 
-                                               latitude = latitude, 
-                                               longitude = longitude, 
-                                               zip_code = zipcode)
-        new_location.save()
-        
-        item.location = new_location
-        item.save()
-    else: 
-        print("Address hasn't changed")
-    
+    new_price.save()    
     return HttpResponse({})
 
 
@@ -203,34 +190,31 @@ def item_interest_action(request, item_id):
 @transaction.atomic
 @accepted_request_type(['GET'])
 @login_required
-def get_item_listing_action(request):
-    exclusion = request.GET.get('exclude_username')
-    inclusion = request.GET.get('include_username')
-    interests = request.GET.get('interest_username')
-    destroyable = request.GET.get('destroyable')
-    if destroyable == 'true' or destroyable == True:
-        destroyable = True
-    else:
-        destroyable = False
+def get_storefront_listing(request):
+    profile = Profile.objects.get(user=request.user)
+    items = Item.objects.exclude(seller=profile)
+    item_list = prepare_items(request, items, False)
+    return JsonResponse({"items": item_list})
 
-    return JsonResponse({'items': []})
 
-    items = Item.objects.all()
-    if inclusion:
-        user = User.objects.filter(username=inclusion)[0]
-        profile = Profile.objects.get(user=user.id)
-        items = items.filter(seller=profile)
-    if exclusion:
-        user = User.objects.filter(username=exclusion)[0]
-        profile = Profile.objects.get(user=user.id)
-        items = items.exclude(seller=profile)
-    if interests:
-        user = User.objects.filter(username=interests)[0]
-        profile = Profile.objects.get(user=user.id)
-        items = items.filter(interested__in=[profile])
-    
-    item_list = prepare_items(request, items, destroyable)
-    return JsonResponse(item_list)
+@transaction.atomic
+@accepted_request_type(['GET'])
+@login_required
+def get_personal_listing(request):
+    profile = Profile.objects.get(user=request.user)
+    items = Item.objects.filter(seller=profile)
+    item_list = prepare_items(request, items, True)
+    return JsonResponse({"items": item_list})
+
+
+@transaction.atomic
+@accepted_request_type(['GET'])
+@login_required
+def get_interest_listing(request):
+    profile = Profile.objects.get(user=request.user)
+    items = Item.objects.filter(interested__in=[profile])
+    item_list = prepare_items(request, items, False)
+    return JsonResponse({"items": item_list})
 
 
 @transaction.atomic

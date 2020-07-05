@@ -11,6 +11,8 @@ class Profile(models.Model):
     phone = models.TextField(blank=True)
     contact_info = models.TextField(blank=True)
     picture = models.FileField(blank=True, default='farn.jpg')
+
+    is_activated = models.BooleanField(default=False)
     user = models.OneToOneField(
         User, on_delete=models.PROTECT, related_name="user")
     
@@ -21,7 +23,10 @@ class Profile(models.Model):
             raise ValidationError("Passwords did not match.")
 
 
-class Location(models.Model):
+class Item(models.Model):
+    name = models.TextField()
+    description = models.TextField(blank=True)
+
     street = models.TextField()
     city = models.TextField()
     state = models.TextField()
@@ -29,12 +34,6 @@ class Location(models.Model):
     longitude = models.FloatField()
     zip_code = models.TextField(blank=True)
 
-
-class Item(models.Model):
-    name = models.TextField()
-    description = models.TextField(blank=True)
-    location = models.ForeignKey(
-        Location, on_delete=models.PROTECT, related_name="location")
     seller = models.ForeignKey(
         Profile, on_delete=models.PROTECT, related_name="seller")
     labels = models.ManyToManyField('Label')

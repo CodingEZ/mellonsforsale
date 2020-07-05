@@ -3,15 +3,14 @@
     "model": "auth.user",
     "pk": 1,
     "fields": {
-      "password": "pbkdf2_sha256$180000$y79RAOQbY0Ox$Yb/H0e5xa2LZlfhwQrxgkEaGrMjoFp6xQV4d42s2M6g=",
+      "password": "pbkdf2_sha256$180000$2bSoneRQfmLs$xc2BptB1cjewwnDxZWf/dTCF7xgVyh1hzmM++1xGdN0=",
       "last_login": "2020-04-01T00:14:49.505Z",
       "is_superuser": false,
       "username": "ezeng",
       "first_name": "Evan",
-      "last_name": "Zheng",
-      "email": "ez@cmu.edu",
+      "last_name": "Zeng",
+      "email": "ezeng@andrew.cmu.edu",
       "is_staff": false,
-      "is_active": true,
       "date_joined": "2020-03-31T20:57:33.952Z",
       "groups": [],
       "user_permissions": []
@@ -29,7 +28,6 @@
       "last_name": "Becker",
       "email": "rx@cmu.edu",
       "is_staff": false,
-      "is_active": true,
       "date_joined": "2020-04-01T02:32:04.404Z",
       "groups": [],
       "user_permissions": []
@@ -48,7 +46,6 @@
       "last_name": "Dubner",
       "email": "bd@cmu.edu",
       "is_staff": false,
-      "is_active": true,
       "date_joined": "2020-04-01T02:32:04.404Z",
       "groups": [],
       "user_permissions": []
@@ -66,7 +63,6 @@
       "last_name": "Eppinger",
       "email": "je@cmu.edu",
       "is_staff": false,
-      "is_active": true,
       "date_joined": "2020-04-01T02:32:04.404Z",
       "groups": [],
       "user_permissions": []
