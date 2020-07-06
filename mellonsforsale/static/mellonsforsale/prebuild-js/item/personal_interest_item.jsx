@@ -5,12 +5,13 @@ class PersonalInterestItem extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            obj: props.item_object
+            obj: props.item_object,
+            item: new InterestItem(props)
         };
     }
 
     make_body_component() {
-        const obj = this.props.item_object;
+        const obj = this.state.obj;
 
         return (
             <div className="card-body">
@@ -49,15 +50,15 @@ class PersonalInterestItem extends React.Component {
     }
 
     make_deletable_component() {
-        return InterestItem.make_deletable_component();
+        return this.state.item.make_deletable_component();
     }
 
     make_interest_component() {
-        return InterestItem.make_interest_component();
+        return this.state.item.make_interest_component();
     }
 
     addNames() {
-        const obj = this.props.item_object;
+        const obj = this.state.obj;
         const strongs = [];
 
         if (obj.interested_users.length > 0) {
@@ -81,7 +82,7 @@ class PersonalInterestItem extends React.Component {
     }
 
     render() {
-        const obj = this.props.item_object;
+        const obj = this.state.obj;
         const body_component = this.make_body_component();
         const interest_component = this.make_interest_component();
         const deletable_component = this.make_deletable_component();

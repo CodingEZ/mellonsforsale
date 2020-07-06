@@ -76,7 +76,7 @@ def item_create_action(request):
         form = CreateItemForm()
         #form.fields["labels"].queryset = Label.objects.all().values_list('name', flat=True)
         context['form'] = form
-        return render(request, 'items/create_item.html', context)
+        return render(request, 'items/item_create.html', context)
 
     # Creates a bound form from the request POST parameters and makes the
     # form available in the request context dictionary.
@@ -85,7 +85,7 @@ def item_create_action(request):
 
     # Validates the form.
     if not form.is_valid():
-        return render(request, 'items/create_item.html', context)
+        return render(request, 'items/item_create.html', context)
 
     latitude, longitude = get_coordinates(request)
     new_item = Item.objects.create( name = form.cleaned_data['name'],

@@ -6,7 +6,7 @@ class StorefrontItem extends React.Component {
         super(props);
         this.state = {
             obj: props.item_object,
-            item: new InterestItem(props.item_object)
+            item: new InterestItem(props)
         };
     }
 

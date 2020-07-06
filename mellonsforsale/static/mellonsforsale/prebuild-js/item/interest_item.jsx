@@ -8,7 +8,7 @@ class InterestItem extends React.Component {
         super(props);
         this.state = {
             obj: props.item_object,
-            item: new BaseItem(props.item_object)
+            item: new BaseItem(props)
         };
     }
 

@@ -1,6 +1,7 @@
 import React from "react";
 import $ from "jquery";
 import { ajaxFailure, getCSRFToken } from "../helpers.js";
+import BaseItem from "./base_item.jsx";
 
 function edit_item(item_id) {
     $.ajax({
@@ -39,6 +40,8 @@ class PersonalItem extends React.Component {
         super(props);
         this.state = {
             obj: props.item_object,
+            item: new BaseItem(props),
+
             update: props.update,
 
             info_is_updated: false,
@@ -98,6 +101,91 @@ class PersonalItem extends React.Component {
         });
     }
 
+    make_body_component() {
+        return (
+            <div className="card-body">
+                <div className="form-section">
+                    <div><strong> Description: </strong></div>
+                    <div>
+                        <input id={`description_${obj.id}`} type="text" value={obj.description} onChange={(e) => this.handleChange("description", e)} />
+                    </div>
+                </div>
+
+                <div className="form-section">
+                    <div>
+                        {" "}
+                        <strong> Location: </strong>
+                        {" "}
+                    </div>
+                    <div>
+                        <label id="location" htmlFor="street">Street: </label>
+                    </div>
+                    <div>
+                        <input name="street" id={`street_${obj.id}`} type="text" value={obj.street} onChange={(e) => this.handleChange("street", e)} />
+                    </div>
+
+                    <div>
+                        <label id="location" htmlFor="city">City: </label>
+                    </div>
+                    <div>
+                        <input name="city" id={`city_${obj.id}`} type="text" value={obj.city} onChange={(e) => this.handleChange("city", e)} />
+                    </div>
+
+                    <div>
+                        <label id="location" htmlFor="state">State :  </label>
+                    </div>
+                    <div>
+                        <input name="state" id={`state_${obj.id}`} type="text" value={obj.state} onChange={(e) => this.handleChange("state", e)} />
+                    </div>
+
+                    <div>
+                        <label id="location" htmlFor="zip">Zip : </label>
+                    </div>
+                    <div>
+                        <input name="zip" id={`zip_${obj.id}`} type="text" value={obj.zip} onChange={(e) => this.handleChange("zip", e)} />
+                    </div>
+                </div>
+
+                <div className="form-section">
+                    <div><strong> Price ($): </strong></div>
+                    <div>
+                        <input id={`price_${obj.id}`} type="text" value={obj.price} onChange={(e) => this.handleChange("price", e)} />
+                    </div>
+                </div>
+
+                <div className="form-section">
+                    <div>
+                        {" "}
+                        <strong> Seller: </strong>
+                        {" "}
+                        <a href={obj.seller_id}>
+                            {" "}
+                            {obj.seller_name}
+                            {" "}
+                        </a>
+                        {" "}
+                    </div>
+                    <div>
+                        {" "}
+                        <strong> Interested: </strong>
+                        {" "}
+                        {this.addNames()}
+                        {" "}
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    make_deletable_component() {
+        return this.state.item.make_deletable_component();
+    }
+
+    make_interest_component() {
+        // personal items don't need an interest button
+        return <a />;
+    }
+
     addNames() {
         const obj = this.props.item_object;
         const strongs = [];
@@ -122,164 +210,20 @@ class PersonalItem extends React.Component {
         return (strongs);
     }
 
-    delete() {
-        if (confirm("Confirm to delete this item?")) {
-            const { id } = this.state.obj;
-            const { update } = this.state;
-            $.ajax({
-                url: `/delete_item/${id}`,
-                data: {
-                    csrfmiddlewaretoken: getCSRFToken()
-                },
-                type: "POST",
-                dataType: "json"
-            })
-                .done((response) => {
-                    if (response == "") {
-                        console.log("Successful item deletion!");
-                        update();
-                    } else {
-                        alert("Error occurred.");
-                        console.log(response);
-                    }
-                })
-                .fail(ajaxFailure);
-        }
-    }
-
     render() {
-        const { obj } = this.state;
-
-        if (obj.deletable) {
-            return (
-                <div className="card">
-                    <div className="card-title centered-content">
-                        <strong> Name: </strong>
-                        <input id={`name_${obj.id}`} type="text" value={obj.name} onChange={(e) => this.handleChange("name", e)} />
-                    </div>
-
-                    <div className="card-body">
-                        <div className="form-section">
-                            <div><strong> Description: </strong></div>
-                            <div>
-                                <input id={`description_${obj.id}`} type="text" value={obj.description} onChange={(e) => this.handleChange("description", e)} />
-                            </div>
-                        </div>
-
-                        <div className="form-section">
-                            <div>
-                                {" "}
-                                <strong> Location: </strong>
-                                {" "}
-                            </div>
-                            <div>
-                                <label id="location" htmlFor="street">Street: </label>
-                            </div>
-                            <div>
-                                <input name="street" id={`street_${obj.id}`} type="text" value={obj.street} onChange={(e) => this.handleChange("street", e)} />
-                            </div>
-
-                            <div>
-                                <label id="location" htmlFor="city">City: </label>
-                            </div>
-                            <div>
-                                <input name="city" id={`city_${obj.id}`} type="text" value={obj.city} onChange={(e) => this.handleChange("city", e)} />
-                            </div>
-
-                            <div>
-                                <label id="location" htmlFor="state">State :  </label>
-                            </div>
-                            <div>
-                                <input name="state" id={`state_${obj.id}`} type="text" value={obj.state} onChange={(e) => this.handleChange("state", e)} />
-                            </div>
-
-                            <div>
-                                <label id="location" htmlFor="zip">Zip : </label>
-                            </div>
-                            <div>
-                                <input name="zip" id={`zip_${obj.id}`} type="text" value={obj.zip} onChange={(e) => this.handleChange("zip", e)} />
-                            </div>
-                        </div>
-
-                        <div className="form-section">
-                            <div><strong> Price ($): </strong></div>
-                            <div>
-                                <input id={`price_${obj.id}`} type="text" value={obj.price} onChange={(e) => this.handleChange("price", e)} />
-                            </div>
-                        </div>
-
-                        <div className="form-section">
-                            <div>
-                                {" "}
-                                <strong> Seller: </strong>
-                                {" "}
-                                <a href={obj.seller_id}>
-                                    {" "}
-                                    {obj.seller_name}
-                                    {" "}
-                                </a>
-                                {" "}
-                            </div>
-                            <div>
-                                {" "}
-                                <strong> Interested: </strong>
-                                {" "}
-                                {this.addNames()}
-                                {" "}
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="card-footer">
-                        <button id={`delete_${obj.id}`} className="item-delete" onClick={() => { this.delete(); }}>
-                            {obj.delete_text}
-                        </button>
-                    </div>
-                </div>
-            );
-        }
+        const obj = this.state.obj;
+        const body_component = this.make_body_component();
+        const deletable_component = this.make_deletable_component();
 
         return (
-            <div id={`item${obj.id}`} className="card">
-                <div className="card-title">
-                    <strong>
-                        Name:
-                        {obj.name}
-                    </strong>
+            <div id={obj.id} className="card">
+                <div className="card-title centered-content">
+                    <strong> Name: </strong>
+                    <input id={`name_${obj.id}`} type="text" value={obj.name} onChange={(e) => this.handleChange("name", e)} />
                 </div>
-                <div className="card-body">
-                    <strong> Description:  </strong>
-                    {" "}
-                    {obj.description}
-                    {" "}
-                    <br />
-                    <strong> Location: </strong>
-                    {" "}
-                    {obj.location}
-                    {" "}
-                    <br />
-                    <strong> Price: </strong>
-                    {" "}
-                    {obj.price}
-                    {" "}
-                    <br />
-                    <strong> Seller: </strong>
-                    {" "}
-                    <a href={obj.seller_id}>
-                        {" "}
-                        {obj.seller_name}
-                        {" "}
-                    </a>
-                    {" "}
-                    <br />
-                    <strong> Interested: </strong>
-                    {" "}
-                    {this.addNames()}
-                    {" "}
-                    <br />
-                </div>
+                {body_component}
                 <div className="card-footer">
-                    <a />
+                    {deletable_component}
                 </div>
             </div>
         );

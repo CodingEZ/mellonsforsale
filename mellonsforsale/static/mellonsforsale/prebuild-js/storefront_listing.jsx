@@ -1,7 +1,7 @@
 import React from "react";
 import $ from "jquery";
 import { ajaxFailure, getCSRFToken } from "./helpers.js";
-import BaseItem from "./item/base_item.jsx";
+import StorefrontItem from "./item/storefront_item.jsx";
 
 let user_pos;
 
@@ -22,7 +22,6 @@ class StorefrontListing extends React.Component {
         super(props);
         this.state = {
             items: [],
-            username: "rubbish",
             queryLabels: []
         };
     }
@@ -91,7 +90,7 @@ class StorefrontListing extends React.Component {
             for (let i = 0; i < this.state.items.length; i++) {
                 const obj = this.state.items[i];
                 grid.push(
-                    <BaseItem key={obj.id.toString()} item_object={obj} />
+                    <StorefrontItem key={obj.id.toString()} item_object={obj} />
                 );
             }
         } else {
