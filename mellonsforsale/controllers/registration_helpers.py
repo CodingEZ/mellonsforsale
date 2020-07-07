@@ -26,6 +26,7 @@ def send_email(request, new_user, token_generator):
     email = EmailMessage(mail_subject, message, to=[new_user.email])
     email.send()
 
+
 def user_from_uid(uidb64):
     try:
         uid = force_text(urlsafe_base64_decode(uidb64))

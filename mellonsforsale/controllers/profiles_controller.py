@@ -37,7 +37,7 @@ def profile_show_action(request, id):
     entry = User.objects.get(id=id)
     profile = Profile.objects.get(user=entry)
     items = Item.objects.filter(seller=profile)
-    
+
     context = {}
     context['entry'] = entry
     context['profile'] = Profile.objects.get(user=entry)
@@ -61,7 +61,7 @@ def profile_update_action(request, id):
     if request.method == "GET":
         context['form'] = EditProfileForm(instance=profile)
         return render(request, 'profiles/profile_update.html', context)
-    
+
     form = EditProfileForm(request.POST, request.FILES)
     context['form'] = form
     if not form.is_valid():

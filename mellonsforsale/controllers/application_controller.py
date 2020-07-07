@@ -13,6 +13,7 @@ class accepted_request_type(object):
             return f(request, *args, **kwargs)
         return wrapped_f
 
+
 class object_missing(object):
     def __init__(self, model):
         self.model = model

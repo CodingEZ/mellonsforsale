@@ -90,7 +90,8 @@ class RegistrationForm(forms.Form):
         phone = self.cleaned_data.get('phone')
         pattern = re.compile("^\d{10}|\d{11}|((\d)?\d{3}[- ]\d{3}[- ]\d{4})$")
         if phone is not None and phone != "" and not pattern.fullmatch(phone):
-            raise ValidationError("Phone has invalid form. Try to avoid using non-numeric characters.")
+            raise ValidationError(
+                "Phone has invalid form. Try to avoid using non-numeric characters.")
         if phone is not None:
             return re.sub('[^0-9]', '', phone)
         return phone

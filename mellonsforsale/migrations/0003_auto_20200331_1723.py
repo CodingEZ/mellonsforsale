@@ -14,6 +14,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='item',
             name='seller',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='seller', to='mellonsforsale.Profile'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT,
+                                    related_name='seller', to='mellonsforsale.Profile'),
         ),
     ]

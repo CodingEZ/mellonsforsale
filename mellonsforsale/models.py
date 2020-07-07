@@ -15,7 +15,7 @@ class Profile(models.Model):
     is_activated = models.BooleanField(default=False)
     user = models.OneToOneField(
         User, on_delete=models.PROTECT, related_name="user")
-    
+
     def clean(self):
         phone = self.phone
         pattern = re.compile("^\d{10}|\d{11}|((\d)?\d{3}[- ]\d{3}[- ]\d{4})$")

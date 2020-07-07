@@ -52,11 +52,15 @@ def prepare_items(request, items, deletable):
 
         curr_item['name'] = item.name
         curr_item['description'] = item.description
-        curr_item['location'] = item.street + ", " + item.city + " " + item.state
-        curr_item['seller_name'] = item.seller.user.first_name + " " + item.seller.user.last_name
-        curr_item['seller_id'] = reverse('profile_overview', kwargs={'id': item.seller.user.id})
-        curr_item['price'] = str(Price.objects.filter(item = item).order_by('-start_date')[0].price)
-        
+        curr_item['location'] = item.street + \
+            ", " + item.city + " " + item.state
+        curr_item['seller_name'] = item.seller.user.first_name + \
+            " " + item.seller.user.last_name
+        curr_item['seller_id'] = reverse('profile_overview', kwargs={
+                                         'id': item.seller.user.id})
+        curr_item['price'] = str(Price.objects.filter(
+            item=item).order_by('-start_date')[0].price)
+
         interested_profiles = item.interested.all()
         curr_item['interested_users'] = [
             {
@@ -68,11 +72,12 @@ def prepare_items(request, items, deletable):
 
         current_profile = Profile.objects.get(user=request.user)
         curr_item['me_interested'] = current_profile in interested_profiles
-        
+
         # can be deleted if owned by the user
         if deletable:
             curr_item['deletable'] = True
-            curr_item['delete_url'] = reverse('item_delete', kwargs={'id': item.id})
+            curr_item['delete_url'] = reverse(
+                'item_delete', kwargs={'id': item.id})
             curr_item['delete_text'] = "Delete 🗑"
         else:
             curr_item['deletable'] = False
@@ -133,7 +138,7 @@ def register_action(request):
                                         first_name=form.cleaned_data['first_name'],
                                         last_name=form.cleaned_data['last_name'])
     new_user.save()
-    
+
     prof = Profile.objects.create(user=new_user)
     prof.phone = form.cleaned_data['phone']
     prof.is_activated = False

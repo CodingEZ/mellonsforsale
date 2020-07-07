@@ -17,7 +17,8 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Item',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.TextField(blank=True)),
                 ('description', models.TextField(blank=True)),
             ],
@@ -25,7 +26,8 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Location',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('street', models.TextField(blank=True)),
                 ('city', models.TextField(blank=True)),
                 ('state', models.TextField(blank=True)),
@@ -37,33 +39,40 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Profile',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('bio', models.TextField(blank=True)),
                 ('phone', models.TextField(blank=True)),
                 ('contact_info', models.TextField(blank=True)),
-                ('picture', models.FileField(blank=True, default='farn.jpg', upload_to='')),
+                ('picture', models.FileField(
+                    blank=True, default='farn.jpg', upload_to='')),
                 ('following', models.ManyToManyField(to=settings.AUTH_USER_MODEL)),
-                ('user', models.OneToOneField(on_delete=django.db.models.deletion.PROTECT, related_name='user', to=settings.AUTH_USER_MODEL)),
+                ('user', models.OneToOneField(on_delete=django.db.models.deletion.PROTECT,
+                                              related_name='user', to=settings.AUTH_USER_MODEL)),
             ],
         ),
         migrations.CreateModel(
             name='Price',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('start_date', models.DateTimeField()),
                 ('end_date', models.DateTimeField()),
                 ('price', models.FloatField()),
-                ('item', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='item', to='mellonsforsale.Item')),
+                ('item', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT,
+                                           related_name='item', to='mellonsforsale.Item')),
             ],
         ),
         migrations.AddField(
             model_name='item',
             name='location',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='location', to='mellonsforsale.Location'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT,
+                                    related_name='location', to='mellonsforsale.Location'),
         ),
         migrations.AddField(
             model_name='item',
             name='seller',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='seller', to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT,
+                                    related_name='seller', to=settings.AUTH_USER_MODEL),
         ),
     ]

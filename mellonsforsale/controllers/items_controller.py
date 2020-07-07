@@ -37,11 +37,15 @@ def prepare_items(request, items, deletable):
 
         curr_item['name'] = item.name
         curr_item['description'] = item.description
-        curr_item['location'] = item.street + ", " + item.city + " " + item.state
-        curr_item['seller_name'] = item.seller.user.first_name + " " + item.seller.user.last_name
-        curr_item['seller_id'] = reverse('profile_show', kwargs={'id': item.seller.user.id})
-        curr_item['price'] = str(Price.objects.filter(item = item).order_by('-start_date')[0].price)
-        
+        curr_item['location'] = item.street + \
+            ", " + item.city + " " + item.state
+        curr_item['seller_name'] = item.seller.user.first_name + \
+            " " + item.seller.user.last_name
+        curr_item['seller_id'] = reverse(
+            'profile_show', kwargs={'id': item.seller.user.id})
+        curr_item['price'] = str(Price.objects.filter(
+            item=item).order_by('-start_date')[0].price)
+
         interested_profiles = item.interested.all()
         curr_item['interested_users'] = [
             {
@@ -53,11 +57,12 @@ def prepare_items(request, items, deletable):
 
         current_profile = Profile.objects.get(user=request.user)
         curr_item['me_interested'] = current_profile in interested_profiles
-        
+
         # can be deleted if owned by the user
         if deletable:
             curr_item['deletable'] = True
-            curr_item['delete_url'] = reverse('item_delete', kwargs={'id': item.id})
+            curr_item['delete_url'] = reverse(
+                'item_delete', kwargs={'id': item.id})
             curr_item['delete_text'] = "Delete 🗑"
         else:
             curr_item['deletable'] = False
@@ -88,22 +93,22 @@ def item_create_action(request):
         return render(request, 'items/item_create.html', context)
 
     latitude, longitude = get_coordinates(request)
-    new_item = Item.objects.create( name = form.cleaned_data['name'],
-                                    description = form.cleaned_data['description'],
-                                    street = request.POST['street'],
-                                    city = request.POST['city'],
-                                    state = request.POST['state'],
-                                    latitude = latitude,
-                                    longitude = longitude,
-                                    zip_code = request.POST['zip'],
-                                    seller = Profile.objects.get(user=request.user))
+    new_item = Item.objects.create(name=form.cleaned_data['name'],
+                                   description=form.cleaned_data['description'],
+                                   street=request.POST['street'],
+                                   city=request.POST['city'],
+                                   state=request.POST['state'],
+                                   latitude=latitude,
+                                   longitude=longitude,
+                                   zip_code=request.POST['zip'],
+                                   seller=Profile.objects.get(user=request.user))
     new_item.labels.set(form.cleaned_data['labels'])
     new_item.save()
 
-    new_price = Price.objects.create(start_date = datetime.now(),
-                                     end_date = None,
-                                     price = float(request.POST['price']),
-                                     item = new_item)
+    new_price = Price.objects.create(start_date=datetime.now(),
+                                     end_date=None,
+                                     price=float(request.POST['price']),
+                                     item=new_item)
     new_price.save()
 
     return redirect(reverse('profile_items', kwargs={'id': request.user.id}))
@@ -128,12 +133,12 @@ def item_update_action(request, id):
     zipcode = request.POST.get('zip')
 
     if name is None or description is None or price is None or street is None \
-        or city is None or state is None or zipcode is None:
+            or city is None or state is None or zipcode is None:
         result = {"message": "Missing parameters."}
         return JsonResponse(result)
-    
+
     latitude, longitude = get_coordinates(request)
-    
+
     item.name = name
     item.description = description
     item.street = street
@@ -144,11 +149,11 @@ def item_update_action(request, id):
     item.zip_code = zipcode
     item.save()
 
-    new_price = Price.objects.create(start_date = datetime.now(timezone.utc),
-                                     end_date = None,
-                                     price = float(price),
-                                     item = item)
-    new_price.save()    
+    new_price = Price.objects.create(start_date=datetime.now(timezone.utc),
+                                     end_date=None,
+                                     price=float(price),
+                                     item=item)
+    new_price.save()
     return HttpResponse({})
 
 
@@ -162,7 +167,7 @@ def item_delete_action(request, id):
         result = {"message": "Cannot delete someone else's item."}
         return JsonResponse(result)
 
-    prices = Price.objects.filter(item = item)
+    prices = Price.objects.filter(item=item)
     prices.delete()
     item.delete()
     return JsonResponse({})
@@ -270,7 +275,7 @@ def filter_item_listing_action(request):
         items = Item.objects.exclude(seller=profile)
         item_list = prepare_items(request, items, False)
         return JsonResponse(item_list)
-    
+
     own_profile = Profile.objects.get(user=request.user)
 
     if request.method != 'GET':
