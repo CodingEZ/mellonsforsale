@@ -4,6 +4,7 @@ const CompressionPlugin = require('compression-webpack-plugin');
 // For generating new HTML files and editing old ones
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
+// const TerserPlugin = require('terser-webpack-plugin');
 // const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 
 
@@ -61,6 +62,10 @@ module.exports = {
   },
   plugins: [
     new CompressionPlugin(),
-    new HtmlWebpackPlugin()
+    new HtmlWebpackPlugin(),
+    // new TerserPlugin(),
   ],
+  resolve: {
+    symlinks: false
+  }
 };

@@ -16,6 +16,7 @@
     "js-beautify": "^1.10.3",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
+    "terser-webpack-plugin": "^3.0.6",
     "uglify-js": "git://github.com/mishoo/UglifyJS2.git#harmony-v2.8.22"
   },
   "devDependencies": {
@@ -25,16 +26,17 @@
     "eslint": "^7.4.0",
     "eslint-loader": "^4.0.2",
     "html-webpack-plugin": "^4.3.0",
+    "parallel-webpack": "^2.6.0",
     "uglifyjs-webpack-plugin": "^2.2.0",
     "webpack": "^5.0.0-beta.20",
     "webpack-cli": "^3.3.12"
   },
   "scripts": {
-    "build": "webpack --config webpack.config.js",
     "lint-py": "autopep8 -d -r mellonsforsale/*",
     "lint-py-auto": "autopep8 -i -r mellonsforsale/*",
     "lint-js": "eslint --ext .js,.jsx mellonsforsale/static/mellonsforsale/prebuild-js",
     "lint-js-auto": "eslint-auto-fix \"mellonsforsale/static/mellonsforsale/prebuild-js\" ",
+    "build": "webpack --config webpack.config.js",
     "run": "python manage.py runserver",
     "rebuild-run": "npm run-script build && npm run-script run",
     "test": "echo \"Error: no test specified\" && exit 1"

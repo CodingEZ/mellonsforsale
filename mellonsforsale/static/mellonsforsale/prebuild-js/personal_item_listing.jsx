@@ -7,9 +7,6 @@ class PersonalItemListing extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            first_name: props.first_name,
-            last_name: props.last_name,
-            username: props.username,
             items: []
         };
     }
@@ -59,10 +56,6 @@ class PersonalItemListing extends React.Component {
 
         return (
             <div id="item_listing">
-                <h4>
-                    Items owned by
-                    {`${this.state.first_name} ${this.state.last_name}`}
-                </h4>
                 <div id="update" className="centered-content" />
                 {grid}
             </div>

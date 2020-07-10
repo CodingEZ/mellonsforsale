@@ -23,7 +23,7 @@ class InterestItem extends React.Component {
     make_interest_component() {
         const obj = this.state.obj;
         let interest_button_id;
-        if (obj.me_interested) {
+        if (obj.is_interested) {
             interest_button_id = "star_yellow";
         } else {
             interest_button_id = "star";
@@ -39,7 +39,7 @@ class InterestItem extends React.Component {
 
     handleClick(id) {
         $.ajax({
-            url: `/item-interest/${id}`,
+            url: `/items/${id}/interest`,
             data: {
                 csrfmiddlewaretoken: getCSRFToken()
             },
@@ -47,15 +47,15 @@ class InterestItem extends React.Component {
             dataType: "json"
         })
             .done((response) => {
-                if (response == "") {
-                    if ($(`#${id} button`)[0].id == "star") {
-                        $(`#${id} button`)[0].id = "star_yellow";
-                    } else {
-                        $(`#${id} button`)[0].id = "star";
-                    }
+                if ("item" in response) {
+                    // this.setState((state, props) => ({
+                    //     obj: response.item,
+                    //     item: new BaseItem(props)
+                    // }));
+                    // this.forceUpdate();
+                    console.log("Success");
                 } else {
-                    response = JSON.parse(response);
-                    console.log(`An error occurred. ${response.message}`);
+                    console.log(response.message);
                 }
             })
             .fail(ajaxFailure);

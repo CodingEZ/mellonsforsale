@@ -1,7 +1,6 @@
 from django.shortcuts import render, redirect, reverse
 from django.http import HttpResponse, JsonResponse, Http404
 from django.urls import reverse
-from django.core import serializers
 
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import cache_control
@@ -18,56 +17,6 @@ from .geolocation_helpers import get_coordinates, item_haversine
 import json
 import math
 from datetime import datetime
-
-
-@transaction.atomic
-def prepare_items(request, items, deletable):
-    """Prepare data into a format friendly for the UI. Returns JSON data."""
-    item_list = []
-    for item in items:
-        curr_item = dict()
-        curr_item['id'] = item.id
-        # Location info
-        curr_item['street'] = item.street
-        curr_item['state'] = item.state
-        curr_item['city'] = item.city
-        curr_item['zip'] = item.zip_code
-        curr_item['lat'] = item.latitude
-        curr_item['long'] = item.longitude
-
-        curr_item['name'] = item.name
-        curr_item['description'] = item.description
-        curr_item['location'] = item.street + \
-            ", " + item.city + " " + item.state
-        curr_item['seller_name'] = item.seller.user.first_name + \
-            " " + item.seller.user.last_name
-        curr_item['seller_id'] = reverse(
-            'profile_show', kwargs={'id': item.seller.user.id})
-        curr_item['price'] = str(Price.objects.filter(
-            item=item).order_by('-start_date')[0].price)
-
-        interested_profiles = item.interested.all()
-        curr_item['interested_users'] = [
-            {
-                'id': profile.user.id,
-                'name': profile.user.first_name + " " + profile.user.last_name,
-                'link': reverse('profile_show', kwargs={'id': profile.user.id})
-            } for profile in interested_profiles
-        ]
-
-        current_profile = Profile.objects.get(user=request.user)
-        curr_item['me_interested'] = current_profile in interested_profiles
-
-        # can be deleted if owned by the user
-        if deletable:
-            curr_item['deletable'] = True
-            curr_item['delete_url'] = reverse(
-                'item_delete', kwargs={'id': item.id})
-            curr_item['delete_text'] = "Delete 🗑"
-        else:
-            curr_item['deletable'] = False
-        item_list.append(curr_item)
-    return item_list
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
@@ -189,7 +138,10 @@ def item_interest_action(request, item_id):
     else:
         item.interested.remove(profile)
     item.save()
-    return JsonResponse({})
+
+    # return the updated item information
+    item_ser = Item.serialize_one(item, request.user)
+    return JsonResponse({"item": item_ser})
 
 
 @transaction.atomic
@@ -198,7 +150,7 @@ def item_interest_action(request, item_id):
 def get_storefront_listing(request):
     profile = Profile.objects.get(user=request.user)
     items = Item.objects.exclude(seller=profile)
-    item_list = prepare_items(request, items, False)
+    item_list = Item.serialize_many(items, request.user)
     return JsonResponse({"items": item_list})
 
 
@@ -208,7 +160,7 @@ def get_storefront_listing(request):
 def get_personal_listing(request):
     profile = Profile.objects.get(user=request.user)
     items = Item.objects.filter(seller=profile)
-    item_list = prepare_items(request, items, True)
+    item_list = Item.serialize_many(items, request.user)
     return JsonResponse({"items": item_list})
 
 
@@ -218,7 +170,7 @@ def get_personal_listing(request):
 def get_interest_listing(request):
     profile = Profile.objects.get(user=request.user)
     items = Item.objects.filter(interested__in=[profile])
-    item_list = prepare_items(request, items, False)
+    item_list = Item.serialize_many(items, request.user)
     return JsonResponse({"items": item_list})
 
 
@@ -273,7 +225,7 @@ def validate_query_labels(query_labels):
 def filter_item_listing_action(request):
     def default_response(profile):
         items = Item.objects.exclude(seller=profile)
-        item_list = prepare_items(request, items, False)
+        item_list = Item.serialize_many(items, request.user)
         return JsonResponse(item_list)
 
     own_profile = Profile.objects.get(user=request.user)
@@ -317,7 +269,7 @@ def filter_item_listing_action(request):
     if not (distance is None) and not (lat is None) and not (lng is None):
         items = [item for item in items if item_haversine(item, lat, lng)]
 
-    item_list = prepare_items(request, items, False)
+    item_list = Item.serialize_many(items, request.user)
     return JsonResponse(item_list)
 
 

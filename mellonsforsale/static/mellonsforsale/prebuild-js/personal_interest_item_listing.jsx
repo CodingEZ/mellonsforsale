@@ -50,10 +50,6 @@ class PersonalInterestItemListing extends React.Component {
 
         return (
             <div id="item_listing">
-                <h4>
-                    Items of expressed interested from
-                    {`${this.state.first_name} ${this.state.last_name}`}
-                </h4>
                 {grid}
             </div>
         );

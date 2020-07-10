@@ -20,9 +20,9 @@ class PersonalInterestItem extends React.Component {
                 {obj.description}
                 {" "}
                 <br />
-                <strong> Location: </strong>
+                <strong> Location:  </strong>
                 {" "}
-                {obj.location}
+                {obj.street + ", " + obj.city + " " + obj.state + ", " + obj.zipcode}
                 {" "}
                 <br />
                 <strong> Price: </strong>
@@ -33,9 +33,9 @@ class PersonalInterestItem extends React.Component {
                 <br />
                 <strong> Seller: </strong>
                 {" "}
-                <a href={obj.seller_id}>
+                <a href={obj.seller.id}>
                     {" "}
-                    {obj.seller_name}
+                    {obj.seller.first_name + " " + obj.seller.last_name}
                     {" "}
                 </a>
                 {" "}
@@ -66,7 +66,9 @@ class PersonalInterestItem extends React.Component {
                 const user = obj.interested_users[i];
                 const result = (
                     <div key={`item_${obj.id}_user_${user.id}`}>
-                        <a href={user.link}>{user.name}</a>
+                        <a href={"/profiles/" + user.id}>
+                            {user.first_name + " " + user.last_name}
+                        </a>
                     </div>
                 );
                 strongs.push(result);
@@ -78,7 +80,7 @@ class PersonalInterestItem extends React.Component {
                 </div>
             );
         }
-        return (strongs);
+        return strongs;
     }
 
     render() {

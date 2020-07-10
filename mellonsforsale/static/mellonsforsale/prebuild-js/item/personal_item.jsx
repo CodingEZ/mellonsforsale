@@ -5,7 +5,7 @@ import BaseItem from "./base_item.jsx";
 
 function edit_item(item_id) {
     $.ajax({
-        url: `/edit_item/${item_id}`,
+        url: `/items/${item_id}/update`,
         data: {
             name: document.getElementById(`name_${item_id}`).value,
             description: document.getElementById(`description_${item_id}`).value,
@@ -102,6 +102,7 @@ class PersonalItem extends React.Component {
     }
 
     make_body_component() {
+        const obj = this.state.obj;
         return (
             <div className="card-body">
                 <div className="form-section">
@@ -187,7 +188,7 @@ class PersonalItem extends React.Component {
     }
 
     addNames() {
-        const obj = this.props.item_object;
+        const obj = this.state.obj;
         const strongs = [];
 
         if (obj.interested_users.length > 0) {
@@ -195,7 +196,9 @@ class PersonalItem extends React.Component {
                 const user = obj.interested_users[i];
                 const result = (
                     <div key={`item_${obj.id}_user_${user.id}`}>
-                        <a href={user.link}>{user.name}</a>
+                        <a href={"/profiles/" + user.id}>
+                            {user.first_name + " " + user.last_name}
+                        </a>
                     </div>
                 );
                 strongs.push(result);
@@ -207,7 +210,7 @@ class PersonalItem extends React.Component {
                 </div>
             );
         }
-        return (strongs);
+        return strongs;
     }
 
     render() {

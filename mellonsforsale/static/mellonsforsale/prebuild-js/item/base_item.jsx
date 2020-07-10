@@ -42,7 +42,7 @@ class BaseItem extends React.Component {
                 <br />
                 <strong> Location: </strong>
                 {" "}
-                {obj.location}
+                {obj.street + ", " + obj.city + " " + obj.state + ", " + obj.zipcode}
                 {" "}
                 <br />
                 <strong> Price: </strong>
@@ -53,9 +53,9 @@ class BaseItem extends React.Component {
                 <br />
                 <strong> Seller: </strong>
                 {" "}
-                <a href={obj.seller_id}>
+                <a href={obj.seller.id}>
                     {" "}
-                    {obj.seller_name}
+                    {obj.seller.first_name + " " + obj.seller.last_name}
                     {" "}
                 </a>
                 {" "}
@@ -66,18 +66,16 @@ class BaseItem extends React.Component {
 
     make_deletable_component() {
         const obj = this.state.obj;
+        if (!obj.is_deletable) {
+            return <a />;
+        }
         const button = (
-            <button>
-                {obj.delete_text}
-            </button>
+            <button>Delete</button>
         );
         button.onclick = () => {
             delete_item(this.state.obj.id);
         };
-        if (obj.deletable) {
-            return button;
-        }
-        return <a />;
+        return button;
     }
 
     render() {

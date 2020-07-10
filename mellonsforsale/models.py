@@ -1,4 +1,4 @@
-from django.db import models
+from django.db import models, transaction
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 
@@ -41,6 +41,52 @@ class Item(models.Model):
 
     class Meta:
         ordering = ('name',)
+
+    @staticmethod
+    @transaction.atomic
+    def serialize_one(item, user):
+        result_item = dict()
+        result_item['id'] = item.id
+        result_item['name'] = item.name
+        result_item['description'] = item.description
+
+        result_item['street'] = item.street
+        result_item['state'] = item.state
+        result_item['city'] = item.city
+        result_item['zipcode'] = item.zip_code
+        result_item['latitude'] = item.latitude
+        result_item['longitude'] = item.longitude
+        
+        result_item['seller'] = {
+            'id': item.seller.user.id,
+            "first_name" : item.seller.user.first_name,
+            "last_name" : item.seller.user.last_name
+        }
+        result_item['price'] = str(Price.objects.filter(
+            item=item).order_by('-start_date')[0].price)
+
+        interested_profiles = item.interested.all()
+        result_item['interested_users'] = [
+            {
+                'id': profile.user.id,
+                'first_name': profile.user.first_name,
+                'last_name': profile.user.last_name
+            } for profile in interested_profiles
+        ]
+
+        current_profile = Profile.objects.get(user=user)
+        result_item['is_interested'] = current_profile in interested_profiles
+        result_item['is_deletable'] = (item.seller.user == user)
+        return result_item
+
+    @staticmethod
+    @transaction.atomic
+    def serialize_many(items, user):
+        result_items = []
+        for item in items:
+            result_item = Item.serialize_one(item, user)
+            result_items.append(result_item)
+        return result_items
 
 
 class Price(models.Model):
