@@ -21,6 +21,7 @@ class StorefrontListing extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            continue_ajax: true,
             items: [],
             queryLabels: []
         };
@@ -31,7 +32,7 @@ class StorefrontListing extends React.Component {
 
         this.interval = setInterval(() => {
             console.log(`Update at ${new Date().toISOString()}`);
-            if (this.state.queryLabels.length > 0) {
+            if (this.state.queryLabels.length > 0 && this.state.continue_ajax) {
                 this.updateWithQueryLabels(this.state.queryLabels);
             } else {
                 this.update();
@@ -56,7 +57,12 @@ class StorefrontListing extends React.Component {
                 const item_list = res.items;
                 this.setState({ items: item_list });
             })
-            .fail(ajaxFailure);
+            .fail((res) => {
+                this.setState({
+                    continue_ajax: false
+                });
+                console.log(res);
+            });
     }
 
     updateWithQueryLabels(queryLabels) {

@@ -146,10 +146,20 @@ class EditItemForm(forms.ModelForm):
         fields = (
             'name',
             'description',
+
+            'street',
+            'city',
+            'state',
+            'zip_code',
             'labels'
         )
         widgets = {
-            'name': forms.Textarea(attrs={'rows': 4, 'cols': 25}),
+            'name': forms.TextInput(),
             'description': forms.Textarea(attrs={'rows': 4, 'cols': 25}),
+
+            'street': forms.TextInput(),
+            'city': forms.TextInput(),
+            'state': forms.TextInput(),
+            'zip_code': forms.TextInput(),
             'labels': forms.CheckboxSelectMultiple()
         }

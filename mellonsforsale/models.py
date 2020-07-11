@@ -22,6 +22,32 @@ class Profile(models.Model):
         if phone is not None and phone != "" and not pattern.fullmatch(phone):
             raise ValidationError("Passwords did not match.")
 
+    @staticmethod
+    @transaction.atomic
+    def serialize_one(profile, user):
+        result = dict()
+        result['id'] = profile.id
+        result['phone'] = profile.phone
+        result['contact_info'] = profile.contact_info
+        if profile.user != user:
+            result['is_following'] = user in profile.following
+        else:
+            result['followers'] = [ {
+                'first_name': user.first_name,
+                'last_name': user.last_name
+            } for user in profile.following]
+            result['followers'].sort()
+        return result
+
+    @staticmethod
+    @transaction.atomic
+    def serialize_many(profiles, user):
+        results = []
+        for profile in profiles:
+            result = Item.serialize_one(profile, user)
+            results.append(result)
+        return results
+
 
 class Item(models.Model):
     name = models.TextField()
@@ -45,28 +71,27 @@ class Item(models.Model):
     @staticmethod
     @transaction.atomic
     def serialize_one(item, user):
-        result_item = dict()
-        result_item['id'] = item.id
-        result_item['name'] = item.name
-        result_item['description'] = item.description
+        result = dict()
+        result['id'] = item.id
+        result['name'] = item.name
+        result['description'] = item.description
 
-        result_item['street'] = item.street
-        result_item['state'] = item.state
-        result_item['city'] = item.city
-        result_item['zipcode'] = item.zip_code
-        result_item['latitude'] = item.latitude
-        result_item['longitude'] = item.longitude
+        result['street'] = item.street
+        result['state'] = item.state
+        result['city'] = item.city
+        result['zipcode'] = item.zip_code
+        result['latitude'] = item.latitude
+        result['longitude'] = item.longitude
         
-        result_item['seller'] = {
+        result['seller'] = {
             'id': item.seller.user.id,
             "first_name" : item.seller.user.first_name,
             "last_name" : item.seller.user.last_name
         }
-        result_item['price'] = str(Price.objects.filter(
-            item=item).order_by('-start_date')[0].price)
+        result['price'] = Price.latest(item)
 
         interested_profiles = item.interested.all()
-        result_item['interested_users'] = [
+        result['interested_users'] = [
             {
                 'id': profile.user.id,
                 'first_name': profile.user.first_name,
@@ -75,18 +100,18 @@ class Item(models.Model):
         ]
 
         current_profile = Profile.objects.get(user=user)
-        result_item['is_interested'] = current_profile in interested_profiles
-        result_item['is_deletable'] = (item.seller.user == user)
-        return result_item
+        result['is_interested'] = current_profile in interested_profiles
+        result['is_deletable'] = (item.seller.user == user)
+        return result
 
     @staticmethod
     @transaction.atomic
     def serialize_many(items, user):
-        result_items = []
+        results = []
         for item in items:
-            result_item = Item.serialize_one(item, user)
-            result_items.append(result_item)
-        return result_items
+            result = Item.serialize_one(item, user)
+            results.append(result)
+        return results
 
 
 class Price(models.Model):
@@ -95,6 +120,11 @@ class Price(models.Model):
     price = models.FloatField()
     item = models.ForeignKey(
         Item, on_delete=models.PROTECT, related_name="item")
+
+    @staticmethod
+    @transaction.atomic
+    def latest(item):
+        return Price.objects.filter(item=item).order_by('-start_date')[0].price
 
 
 class Category(models.Model):

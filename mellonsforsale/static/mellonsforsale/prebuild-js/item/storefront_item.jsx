@@ -19,7 +19,24 @@ class StorefrontItem extends React.Component {
     }
 
     make_interest_component() {
-        return this.state.item.make_interest_component();
+        const obj = this.state.obj;
+        let interest_button_id;
+        if (obj.is_interested) {
+            interest_button_id = "star_yellow";
+        } else {
+            interest_button_id = "star";
+        }
+        return (
+            <div>
+                <button id={interest_button_id} onClick={() => this.handleClick(this, InterestItem, obj.id)}>
+                    <strong> Interested &#9734; </strong>
+                </button>
+            </div>
+        );
+    }
+
+    handleClick(item_component, ItemClass, id) {
+        InterestItem.handleClick(item_component, ItemClass, id);
     }
 
     render() {
@@ -31,8 +48,7 @@ class StorefrontItem extends React.Component {
             <div id={obj.id} className="card">
                 <span className="card-title centered-content">
                     <strong>
-                        Name:
-                        {obj.name}
+                        {"Name: " + obj.name}
                     </strong>
                 </span>
                 {body_component}

@@ -54,7 +54,24 @@ class PersonalInterestItem extends React.Component {
     }
 
     make_interest_component() {
-        return this.state.item.make_interest_component();
+        const obj = this.state.obj;
+        let interest_button_id;
+        if (obj.is_interested) {
+            interest_button_id = "star_yellow";
+        } else {
+            interest_button_id = "star";
+        }
+        return (
+            <div>
+                <button id={interest_button_id} onClick={() => this.handleClick(this, InterestItem, obj.id)}>
+                    <strong> Interested &#9734; </strong>
+                </button>
+            </div>
+        );
+    }
+
+    handleClick(item_component, ItemClass, id) {
+        InterestItem.handleClick(item_component, ItemClass, id);
     }
 
     addNames() {
@@ -91,10 +108,9 @@ class PersonalInterestItem extends React.Component {
 
         return (
             <div id={obj.id} className="card">
-                <div className="card-title">
+                <div className="card-title centered-content">
                     <strong>
-                        Name:
-                        {obj.name}
+                        {"Name: " + obj.name}
                     </strong>
                 </div>
                 {body_component}

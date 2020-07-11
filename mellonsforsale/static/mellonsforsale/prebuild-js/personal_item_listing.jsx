@@ -17,7 +17,7 @@ class PersonalItemListing extends React.Component {
         this.interval = setInterval(() => {
             console.log(`Update at ${new Date().toISOString()}`);
             this.update();
-        }, 10000);
+        }, 30000);
     }
 
     componentWillUnmount() {
@@ -56,7 +56,6 @@ class PersonalItemListing extends React.Component {
 
         return (
             <div id="item_listing">
-                <div id="update" className="centered-content" />
                 {grid}
             </div>
         );

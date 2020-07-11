@@ -30,14 +30,14 @@ class InterestItem extends React.Component {
         }
         return (
             <div>
-                <button id={interest_button_id} onClick={() => this.handleClick(obj.id)}>
+                <button id={interest_button_id} onClick={() => this.handleClick(this, BaseItem, obj.id)}>
                     <strong> Interested &#9734; </strong>
                 </button>
             </div>
         );
     }
 
-    handleClick(id) {
+    handleClick(item_component, ItemClass, id) {
         $.ajax({
             url: `/items/${id}/interest`,
             data: {
@@ -48,11 +48,10 @@ class InterestItem extends React.Component {
         })
             .done((response) => {
                 if ("item" in response) {
-                    // this.setState((state, props) => ({
-                    //     obj: response.item,
-                    //     item: new BaseItem(props)
-                    // }));
-                    // this.forceUpdate();
+                    item_component.setState({
+                        obj: response.item,
+                        item: new ItemClass({ item: response.item })
+                    });
                     console.log("Success");
                 } else {
                     console.log(response.message);
@@ -69,10 +68,9 @@ class InterestItem extends React.Component {
 
         return (
             <div id={obj.id} className="card">
-                <div className="card-title">
+                <div className="card-title centered-content">
                     <strong>
-                        Name:
-                        {obj.name}
+                        {"Name: " + obj.name}
                     </strong>
                 </div>
                 {body_component}

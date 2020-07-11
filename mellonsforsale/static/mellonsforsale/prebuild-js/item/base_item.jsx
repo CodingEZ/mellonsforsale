@@ -53,7 +53,7 @@ class BaseItem extends React.Component {
                 <br />
                 <strong> Seller: </strong>
                 {" "}
-                <a href={obj.seller.id}>
+                <a href={"/profiles/" + obj.seller.id}>
                     {" "}
                     {obj.seller.first_name + " " + obj.seller.last_name}
                     {" "}
@@ -85,10 +85,9 @@ class BaseItem extends React.Component {
 
         return (
             <div id={obj.id} className="card">
-                <div className="card-title">
+                <div className="card-title centered-content">
                     <strong>
-                        Name:
-                        {obj.name}
+                        {"Name: " + obj.name}
                     </strong>
                 </div>
                 {body_component}

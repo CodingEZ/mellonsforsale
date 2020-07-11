@@ -103,7 +103,7 @@ def item_update_action(request, id):
                                      price=float(price),
                                      item=item)
     new_price.save()
-    return HttpResponse({})
+    return JsonResponse(Item.serialize_one(item, request.user))
 
 
 @transaction.atomic
