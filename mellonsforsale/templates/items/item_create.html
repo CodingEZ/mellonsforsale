@@ -13,7 +13,7 @@
       </div>
     </div>
 
-    <div class="col-6 centered-content">
+    <div class="col-6">
       <form method="post" action="{% url 'item_create' %}">
         <table>
           {% for field in form.visible_fields %}
@@ -25,23 +25,32 @@
               </td>
             </tr>
           {% endfor %}
+
+          <tr>
+            <td><label for="price">Price: </label></td>
+            <td><input type="number" step="0.01" name="price" value="0" required></td>
+          </tr>
+
+          <tr>
+            <td><label for="street">Street: </label></td>
+            <td><input id="street" type="text" name="street" required></td>
+          </tr>
+
+          <tr>
+            <td><label for="city">City: </label></td>
+            <td><input id="city" type="text" name="city" required></td>
+          </tr>
+
+          <tr>
+            <td><label for="state">State: </label></td>
+            <td><input id="state" type="text" name="state" required></td>
+          </tr>
+
+          <tr>
+            <td><label for="zip">Zip: </label></td>
+            <td><input id="zip" type="text" pattern="^\s*?\d{5}(?:[-\s]\d{4})?\s*?$" maxlength="5" name="zip"></td>
+          </tr>
         </table>
-        </br>
-
-        <label for="price">Price: </label>
-        <input type="number" step="0.01" name="price" value="0" required> <br/>
-
-        <label for="street">Street: </label>
-        <input id = "street" type="text" name="street" required> <br/>
-
-        <label for="city">City: </label>
-        <input id = "city" type="text" name="city" required> <br/>
-
-        <label for="state">State: </label>
-        <input id = "state" type="text" name="state" required> <br/>
-
-        <label for="zip">Zip: </label>
-        <input id = "zip" type="text" pattern="^\s*?\d{5}(?:[-\s]\d{4})?\s*?$" maxlength="5" name = "zip"> <br/>
 
         {% csrf_token %}
         <button id = "id_register_button" type="submit">Submit</button>

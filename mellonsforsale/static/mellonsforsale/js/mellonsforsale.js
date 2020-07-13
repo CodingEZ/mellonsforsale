@@ -176,6 +176,7 @@ function initMap() {
 
                 let city = results[0].address_components[3].long_name;
                 let state = results[0].address_components[4].long_name;
+                console.log(results[0]);
                 let zip;
                 if (results[0].address_components[7] != undefined) {
                     zip = results[0].address_components[7].long_name;

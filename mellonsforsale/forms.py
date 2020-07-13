@@ -134,32 +134,21 @@ class CreateItemForm(forms.ModelForm):
             'labels'
         )
         widgets = {
-            'name': forms.Textarea(attrs={'rows': 4, 'cols': 25}),
-            'description': forms.Textarea(attrs={'rows': 4, 'cols': 25}),
-            'labels': forms.CheckboxSelectMultiple()
-        }
-
-
-class EditItemForm(forms.ModelForm):
-    class Meta:
-        model = Item
-        fields = (
-            'name',
-            'description',
-
-            'street',
-            'city',
-            'state',
-            'zip_code',
-            'labels'
-        )
-        widgets = {
             'name': forms.TextInput(),
             'description': forms.Textarea(attrs={'rows': 4, 'cols': 25}),
-
-            'street': forms.TextInput(),
-            'city': forms.TextInput(),
-            'state': forms.TextInput(),
-            'zip_code': forms.TextInput(),
             'labels': forms.CheckboxSelectMultiple()
         }
+
+
+class EditItemForm(forms.Form):
+    name = forms.CharField(widget=forms.TextInput())
+    description = forms.CharField(widget=forms.Textarea(attrs={'rows': 4, 'cols': 25}))
+    street = forms.CharField(widget=forms.TextInput())
+    city = forms.CharField(widget=forms.TextInput())
+    state = forms.CharField(widget=forms.TextInput())
+    zip_code = forms.CharField(widget=forms.TextInput())
+    
+    price = forms.DecimalField()
+    labels = forms.ChoiceField(choices=Label.get_choices(),
+        widget=forms.CheckboxSelectMultiple())
+    

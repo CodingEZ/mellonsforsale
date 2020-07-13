@@ -14,7 +14,7 @@
     </div>
 
     <div class="col-6 centered-content">
-      <form method="post" action="{% url 'item_create' %}">
+      <form method="post" action="{% url 'item_update' %}">
         <table>
           {% for field in form.visible_fields %}
             <tr>
@@ -27,21 +27,6 @@
           {% endfor %}
         </table>
         </br>
-
-        <label for="price">Price: </label>
-        <input type="number" step="0.01" name="price" value="0" required> <br/>
-
-        <label for="street">Street: </label>
-        <input id = "street" type="text" name="street" required> <br/>
-
-        <label for="city">City: </label>
-        <input id = "city" type="text" name="city" required> <br/>
-
-        <label for="state">State: </label>
-        <input id = "state" type="text" name="state" required> <br/>
-
-        <label for="zip">Zip: </label>
-        <input id = "zip" type="text" pattern="^\s*?\d{5}(?:[-\s]\d{4})?\s*?$" maxlength="5" name = "zip"> <br/>
 
         {% csrf_token %}
         <button id = "id_register_button" type="submit">Submit</button>

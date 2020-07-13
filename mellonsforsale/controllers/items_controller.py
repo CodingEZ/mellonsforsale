@@ -10,13 +10,29 @@ from mellonsforsale.models import Profile, Item, Price, Category, Label
 from django.utils import timezone
 from django.db import transaction
 
-from mellonsforsale.forms import LoginForm, RegistrationForm, CreateProfileForm, EditProfileForm, CreateItemForm
+from mellonsforsale.forms import LoginForm, RegistrationForm, \
+    CreateProfileForm, EditProfileForm, CreateItemForm, EditItemForm
 from .application_controller import *
 from .geolocation_helpers import get_coordinates, item_haversine
 
 import json
 import math
 from datetime import datetime
+
+
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+@transaction.atomic
+@accepted_request_type(['GET'])
+@login_required
+def item_show_action(request, id):
+    context = {}
+    items = Item.objects.filter(pk=id)
+    if len(items) == 0:
+        return render(request, 'items/item_404.html', context)
+    
+    item = items[0]
+    context['item'] = Item.serialize_one(item, request.user)
+    return render(request, 'items/item_show.html', context)
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
@@ -64,10 +80,15 @@ def item_create_action(request):
 
 
 @transaction.atomic
-@accepted_request_type(['POST'])
+@accepted_request_type(['GET', 'POST'])
 @object_missing(Item)
 @login_required
 def item_update_action(request, id):
+    if request.method == 'GET':
+        context = {}
+        context['form'] = EditItemForm()
+        return render(request, 'items/item_update.html', context)
+
     item = Item.objects.get(pk=id)
     if item.seller.user != request.user:
         result = {"message": "Cannot edit someone else's item."}

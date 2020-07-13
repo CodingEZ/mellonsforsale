@@ -139,3 +139,10 @@ class Label(models.Model):
     category = models.ForeignKey(
         Category, on_delete=models.PROTECT, related_name="category")
     description = models.TextField(blank=True)
+
+    @staticmethod
+    def get_choices():
+        options = []
+        for label in Label.objects.all():
+            options.append((label, label))
+        return options

@@ -1,1 +1,44 @@
-{% extends "items/base_logged_in.html" %}
+{% extends "../base_logged_in.html" %}
+
+{% block content %}
+
+    <div class="centered-content">
+        <h1 class="page_name"> Item Information </h1>
+    </div>
+    
+    {% load static %}
+    <div class="row">
+        <div class="col-8">
+            <div>
+                <strong>Name: </strong>
+                <a>{{ item.name }}</a>
+            </div>
+
+            <div>
+                <strong>Description: </strong><br />
+                <a>{{ item.description }}</a>
+            </div>
+
+            <div>
+                <strong>Location: </strong>
+                <a>{{ item.street }}, {{ item.city }}, {{ item.state }} {{ item.zipcode }}</a>
+            </div>
+
+            <div>
+                <strong>Estimated Price: </strong>
+                <a>{{ item.price }}</a>
+            </div>
+
+            <div>
+                <strong>Seller: </strong>
+                <a href="{% url 'item_show' item.seller.id  %}">
+                    {{item.seller.first_name}} {{item.seller.last_name}}
+                </a>
+            </div>
+        </div>
+        
+        <div class="col-4">
+        </div>
+    </div>
+
+{% endblock %}
