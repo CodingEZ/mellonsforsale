@@ -1,10 +1,16 @@
-# team5
-Repository for team5
+# A Basic Implementation of a CMU "Craigslist" P2P Model
 
 ## Requirements
-- django
+- Django (version undetermined)
+- NodeJS (latest preferrable)
+- ReactJS
+- Webpack
 
 ## Python packages
+- django
+  ```console
+      pip3 install django
+    ```
 - geopy 
   ```console
       pip3 install geopy
@@ -12,4 +18,4 @@ Repository for team5
 
 ## Loading example data
 Use the fixtures for loading data instead of performing this manually. The example command is
-  ```python manage.py loaddata users profiles locations categories labels prices items```
+  ```python manage.py loaddata users profiles categories labels prices items```
